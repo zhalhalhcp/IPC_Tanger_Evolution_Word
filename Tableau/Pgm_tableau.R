@@ -98,4 +98,16 @@ ft <-  flextable::bg(ft, i = c(1,4,15), bg = "#F5C2A5", part = "body") # couleur
 
 ft
 
+# sauvegarde du tableau #
+#########################
+
+
+# ---- Objet rds ----
+
 saveRDS(ft,"Data_output/tab_flextable.rds")
+
+# ---- Export vers Word ----
+save_as_docx(
+  "IPC pour Tanger" = ft,
+  path = "Tableau/table_resultats.docx"
+)
