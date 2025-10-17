@@ -4,7 +4,7 @@ library(ggplot2)
 library(lubridate)
 library(dplyr)
 library(tidyr)
-lirary(janitor)
+library(janitor)
 
 date_analyse <- ym("2025_07")
 var_analyse <- format(date_analyse, "V%Y_%m")  # variable analyse
