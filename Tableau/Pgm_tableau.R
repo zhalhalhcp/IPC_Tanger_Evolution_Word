@@ -104,10 +104,10 @@ ft
 
 # ---- Objet rds ----
 
-saveRDS(ft,"Data_output/tab_flextable.rds")
+saveRDS(ft,"Output/tab_flextable.rds")
 
 # ---- Export vers Word ----
 save_as_docx(
   "IPC pour Tanger" = ft,
-  path = "Tableau/table_resultats.docx"
+  path = "Output/tab_flextable.docx"
 )
