@@ -1,0 +1,24 @@
+
+/* 
+h1 {
+  color: green;
+} 
+*/
+
+
+/* Cacher le titre "AUTHOR" (balise <div> avec classe associée) */
+.quarto-title-meta-heading {
+  display: none !important;
+}
+
+/* indique où positionner la légende (caption) d’un tableau HTML */
+table {
+  caption-side: top;
+}
+
+.my_class_gra {
+  height: auto; 
+  width: 100%; 
+  max-width: 750px;
+  border: 2px solid #ccc;
+}

@@ -1,0 +1,397 @@
+---
+title: "Rapport mensuel pour l'analyse de l'Indice des Prix à la Consommation(IPC)"
+author: "Direction Régionale de Tanger-Tétouan-Al Hoceima"
+format: 
+  html:
+    self-contained: true
+    toc: true
+    toc-depth: 2
+    toc-location: left
+    toc-title: Sommaire
+    grid :
+      sidebar-width: 250px
+      body-width: 1000px
+      margin-width: 50px
+      gutter-width: 1.5rem
+    css: style_html.css  
+params: 
+    p_ville: "" 
+    p_periode: ""
+           
+editor: visual
+---
+
+```{r}
+#| label: initialisation
+#| echo: false 
+#| warning: false 
+#| message: false 
+ 
+# Packages 
+library(dplyr)
+library(lubridate)
+library(kableExtra) 
+library(ggplot2) 
+library(tidyr)
+library(glue)
+library(stringr)
+library(janitor)
+
+# option 
+# pour empêcher quarto d'appliquer automatiquement son propre style, alignement, pagination, etc.)
+options(knitr.table.html.attr = "quarto-disable-processing=true") 
+```
+
+```{r}
+#| label: parametres
+#| echo: false
+#| warning: false 
+#| message: false 
+# Recuperation des parametres
+code_ville <- str_pad(params$p_ville, width = 2, pad = "0")
+periode_analyse <- params$p_periode 
+```
+
+```{r}
+#| label: preparation_donnees
+#| echo: false 
+#| warning: false 
+#| message: false 
+
+# sous-prog_traitement_donnees
+source(file="ZZ_Preparation_donnees_analyse.R")
+```
+
+```{r}
+#| label: titre
+#| echo: false 
+#| warning: false 
+#| message: false
+ 
+if (code_ville != "99") {
+      titre <- glue("Ville de {l_ville} en {l_mois}  {substr(periode_analyse,1,4)} ")
+} else {
+     titre <- glue("{l_ville} en {l_mois}  {substr(periode_analyse,1,4)} ")
+}
+```
+
+# [`r titre`]{style="color:red;"}
+
+# Ensemble
+
+```{r}
+#| label: ensemble
+#| echo: false
+#| warning: false
+#| message: false
+
+kable(ipc_ensemble,
+      col.names = c("Secteur",
+                    "Evolution mensuelle",
+                    "Evolution annuelle"),
+      format.args = list(decimal.mark = ","),
+      escape = F,
+      caption ="<span style='font-size:20px'>Evolutions mensuelles et annuelles<br>par grand secteur</span>") %>%
+  kable_styling(bootstrap_options = "striped",
+                full_width = FALSE,
+                position = "left",
+                font_size = 14) %>%
+  column_spec(1, width = "6cm") %>%
+  row_spec(1, bold = T)
+```
+
+# Secteur alimentaire
+
+```{r}
+#| label: alimentaire
+#| echo: false
+#| warning: false
+#| message: false
+
+
+ipc_alim %>% 
+  select (code,libelle_diff,evol_mens,evol_an) %>%
+  kable(col.names = c("Code",
+                    "Produits",
+                    "Evolution mensuelle",
+                    "Evolution annuelle" ) ,
+       format.args = list(decimal.mark = ","),
+       escape = F ,
+      caption ="<span style='font-size:20px'>Evolutions mensuelles et annuelles<br>pour les produits alimentaires</span>") %>% 
+  kable_styling(bootstrap_options = "striped",  
+                full_width = F, 
+                position = "left", 
+                font_size = 14) %>% 
+    row_spec(1, bold = T) %>% 
+    column_spec(2, width = "12cm") 
+ 
+# Mensuel 
+ipc_alim_mens <- ipc_alim %>% 
+  select (code, libelle_diff, evol_mens) %>%  
+  arrange(desc(evol_mens))  
+ 
+ipc_alim_mens %>%  
+  kable(col.names = c("Code",
+                      "Produits", 
+                      "Evolution mensuelle" ),
+        format.args = list(decimal.mark = ","), 
+        escape = F, 
+        caption ="<span style='font-size:20px'>Les évolutions mensuelles décroissantes des produits alimentaires</span>") %>% 
+  kable_styling(bootstrap_options = "striped",
+                full_width = F, 
+                position = "left", 
+                font_size = 14)  %>% 
+  row_spec(which(ipc_alim_mens$code == "001ALIM"), bold = T) %>% 
+  column_spec(2, width = "12cm") 
+ 
+# Annuel 
+ipc_alim_an <- ipc_alim %>% 
+  select (code,libelle_diff,  evol_an) %>%  
+  arrange(desc(evol_an))  
+
+ipc_alim_an %>% 
+  kable(col.names = c("Code",
+                      "Produits", 
+                      "Evolution annuelle" ), 
+        format.args = list(decimal.mark = ","), 
+        escape = F, 
+        caption ="<span style='font-size:20px'>Les évolutions annuelles décroissantes des produits alimentaires</span>") %>%  
+  kable_styling(bootstrap_options = "striped",  
+                full_width = F,  
+                position = "left", 
+                font_size = 14)  %>% 
+  row_spec(which(ipc_alim_an$code == "001ALIM"), bold = T) %>%  
+  column_spec(2, width = "14cm")
+```
+
+# Secteur non alimentaire
+
+```{r}
+#| label: non_alimentaire
+#| echo: false
+#| warning: false
+#| message: false
+
+ipc_nonalim %>%
+  select (code,libelle_diff,evol_mens,evol_an) %>%
+    kable(col.names = c("Code",
+                        "Produits",
+                        "Evolution mensuelle",
+                        "Evolution annuelle" ),
+        format.args = list(decimal.mark = ","),
+        escape = F,
+        caption ="<span style='font-size:20px'>Evolutions mensuelles et annuelles<br>pour les produits non alimentaires</span>") %>%
+  kable_styling(bootstrap_options = "striped",
+                full_width = F,
+                position = "left",
+                font_size = 14) %>%
+  row_spec(1, bold = T) %>%
+  column_spec(2, width = "12cm")
+
+# Mensuel
+
+ipc_nonalim_mens <- ipc_nonalim %>%
+  select (code,libelle_diff,  evol_mens) %>%
+  arrange(desc(evol_mens))
+
+ipc_nonalim_mens %>%
+  kable(col.names = c("Code",
+                      "Produits", 
+                      "Evolution mensuelle" ),
+       format.args = list(decimal.mark = ","),
+       escape = F,
+       caption ="<span style='font-size:20px'>Les évolutions mensuelles décroissantes des produits non alimentaires</span>") %>%
+  kable_styling(bootstrap_options = "striped",
+               full_width = F,
+               position = "left",
+               font_size = 14)  %>%
+  row_spec(which(ipc_nonalim_mens$code == "001NONALIM"), bold = T) %>%
+  column_spec(2, width = "12cm")
+ 
+# Annuel
+ 
+ipc_nonalim_an <- ipc_nonalim %>%
+    select (code,libelle_diff,  evol_an) %>%
+    arrange(desc(evol_an))
+
+ipc_nonalim_an %>%
+ kable(col.names = c("Code",
+                     "Produits", 
+                     "Evolution annuelle" ),
+       format.args = list(decimal.mark = ","),
+       escape = F,
+       caption ="<span style='font-size:20px'>Les évolutions annuelles décroissantes des produits non alimentaires</span>") %>%
+ kable_styling(bootstrap_options = "striped",
+               full_width = F,
+               position = "left",
+               font_size = 14)  %>%
+  row_spec(which(ipc_nonalim_an$code == "001NONALIM"), bold = T) %>%
+  column_spec(2, width = "14cm")
+
+```
+
+# Evolution dans le temps de l'IPC
+
+## Evolution annuelle
+
+```{r}
+#| label: graphique_annuel
+#| echo: false
+#| warning: false
+#| message: false
+#| classes: .my_class_gra 
+#| fig-width: 8
+#| fig-height: 5
+
+ggplot2::ggplot(data=ipc_evol_annuel_gra, 
+                aes(x=x_date, 
+                    y=evol,
+                    group=1 )) +
+  geom_line(color = "red",linewidth = 1) +
+  geom_hline(yintercept=0, col="black", linewidth=1) +
+  geom_point(size=1.5)  +
+  xlab("Période") +
+  ylab("Evolution (%)") +
+  ggtitle("Graphique de l'évolution annuelle en %")  +
+  theme(plot.title = element_text(size= 16) , 
+       axis.title = element_text(size= 13) ,
+       axis.text.x = element_text(size= 10),
+       axis.text.y = element_text(size= 10) )
+
+```
+
+```{r}
+#| label: tab_graphique_annuel
+#| echo: false
+#| warning: false
+#| message: false
+
+opts <- options(knitr.kable.NA = "")
+
+ipc_evol_annuel %>%
+  select(x_date,ipc,evol) %>%
+  kable(col.names = c("Date",
+                      "IPC", 
+                      "Evolution annuelle" ),
+        format.args = list(decimal.mark = ","),
+        escape = F,
+        caption ="<span style='font-size:20px'>Tableau de l'évolution annuelle en %</span>") %>%
+  kable_styling(bootstrap_options = "striped",
+                full_width = FALSE,
+                position = "left",
+                font_size = 14)  %>%
+  column_spec(c(1,2,3), width = "3cm") %>%
+  column_spec(2,color = "gray")
+
+```
+
+## Evolution mensuelle
+
+```{r}
+#| label: graphique_mensuel
+#| echo: false
+#| warning: false
+#| message: false
+#| classes: .my_class_gra
+#| fig-width: 8
+#| fig-height: 5
+
+ggplot2::ggplot(data=ipc_evol_mensuel_gra,
+                aes(x=x_date,
+                    y=evol,
+                    group=1 )) +
+  geom_line(color = "red",linewidth = 1) +
+  geom_hline(yintercept=0, col="black", linewidth=1) +
+  geom_point(size=1.5)  +
+  xlab("Période") +
+  ylab("Evolution (%)") +
+  ggtitle("Graphique de l'évolution mensuelle en %")  +
+  theme(plot.title = element_text(size= 16),
+        axis.title = element_text(size= 13),
+        axis.text.x = element_text(size= 8),
+        axis.text.y = element_text(size= 10))
+
+```
+
+```{r}
+#| label: tab_graphique_mensuel
+#| echo: false
+#| warning: false
+#| message: false
+
+opts <- options(knitr.kable.NA = "")
+
+ipc_evol_mensuel %>%
+  select(x_date,ipc,evol) %>%
+  kable(col.names = c("Date","IPC", "Evolution mensuelle" ),
+        format.args = list(decimal.mark = ","),
+        escape = F,
+        caption ="<span style='font-size:20px'>Tableau de l'évolution mensuelle en %</span>") %>%
+  kable_styling(bootstrap_options = "striped",
+                full_width = FALSE,
+                position = "left",
+                font_size = 14)  %>%
+  column_spec(c(1,2,3), width = "3cm") %>%
+  column_spec(2,color = "gray")
+
+```
+
+# Tableau de synthèse
+
+```{r}
+#| label: tableau_synthese
+#| echo: false
+#| warning: false
+#| message: false
+  
+if (code_ville != "99") {
+      titre_tabsyn <- glue("<span style='font-size:20px'>Indice des prix à la consommation de la ville de  {l_ville} : {l_mois} {substr(periode_analyse,1,4)} (base 2017 :100)</span>")
+} else {
+      titre_tabsyn <- glue("<span style='font-size:20px'>Indice des prix à la consommation au niveau national : {l_mois} {substr(periode_analyse,1,4)} (base 2017 :100)</span>")
+}
+
+ipc_tableau %>% 
+  kable(col.names = linebreak( c("",
+                                 "",
+                                 paste0(l_mois12," ",a_mois12 ),
+                                 paste0(l_mois3," ",a_mois3 ),
+                                 paste0(l_mois2," ",a_mois2 ),
+                                 paste0(l_mois1," ",a_mois1 ),
+                                 paste0(l_mois," ",substr(periode_analyse,1,4) ),
+                                 "mois",
+                                 "3 mois", 
+                                 "12 mois" ) ,
+                               align = "l") ,
+         format.args = list(decimal.mark = ","),
+         align = c("lrrrrrrrrr"),
+         escape = F,
+         caption = titre_tabsyn ) %>% 
+     kable_styling(full_width = F,
+                 position = "left",
+                 font_size = 14 ) %>% 
+      add_header_above(c("Division de produits" = 1,
+                         "Pondérations" = 1,
+                         "Indice mensuel" = 5,
+                         "Variation (%)" = 3),
+                       bold = TRUE) %>%
+   row_spec(c(1,4,15),bold=T,background = "#BBBBBB")  %>%
+   column_spec(1, width_min = "6cm") %>%
+   column_spec(c(8,9,10), width = "1.9cm")
+
+```
+
+<!-- # TEST -->
+
+<!-- ```{r} -->
+
+<!-- #| label: test -->
+
+<!-- print(code_ville) -->
+
+<!-- print(periode_analyse) -->
+
+<!-- print(liste_var_gra_men) -->
+
+<!-- print(ipc_evol_mensuel_gra) -->
+
+<!-- ``` -->
