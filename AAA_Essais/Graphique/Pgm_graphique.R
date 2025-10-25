@@ -12,7 +12,7 @@ mois_analyse <- format(date_analyse, "%m")
 
 # Lecture des données et mise en forme
 
-ipc_histo <- readRDS("Data_entree/IPC_histo_2017_01_2025_07.rds")
+ipc_histo <- readRDS("Data_locales/IPC_histo_2017_01_2025_07.rds")
 
 liste_var_gra_ann <- 
   colnames(ipc_histo)[grepl(paste0(mois_analyse,"$"), colnames(ipc_histo))]  
