@@ -3,77 +3,121 @@
 library(ggplot2)
 library(lubridate)
 library(dplyr)
-library(tidyr)
-library(janitor)
+library(stringr)
 
-date_analyse <- ym("2025_07")
-var_analyse <- format(date_analyse, "V%Y_%m")  # variable analyse
-mois_analyse <- format(date_analyse, "%m")
 
-# Lecture des données et mise en forme
+#lecture des dataframes des graphiques deja enregistres sous rds
 
-ipc_histo <- readRDS("Data_locales/IPC_histo_2017_01_2025_07.rds")
+ipc_evol_annuel_gra <- readRDS("AAA_Essais/Graphique/ipc_evol_annuel_gra.rds")
 
-liste_var_gra_ann <- 
-  colnames(ipc_histo)[grepl(paste0(mois_analyse,"$"), colnames(ipc_histo))]  
-liste_var_gra_ann <- sort(unique(liste_var_gra_ann[liste_var_gra_ann <= var_analyse]))
 
-liste_variables <- sort(unique(c("code","libelle_diff",liste_var_gra_ann)))
+ipc_evol_annuel_gra$x_date <- ym(gsub("/", "-", ipc_evol_annuel_gra$x_date))
 
-ipc_histo_reduit <- ipc_histo %>% 
-  filter(ville ==  "10") %>% 
-  select(all_of(liste_variables))
 
-ipc_evol_annuel <- ipc_histo_reduit %>%
-  filter(code == "000GEN") %>% 
-  select(code, libelle_diff, all_of(liste_var_gra_ann))
 
-ipc_evol_annuel <- ipc_evol_annuel %>% 
-  pivot_longer(
-    cols = starts_with("V"),  # Colonnes à transformer
-    names_to = "x_date",           # Nom de la nouvelle colonne contenant les noms de variables
-    values_to = "ipc"         # Nom de la colonne avec les valeurs
-  ) %>% 
-  arrange (x_date) %>%
-  mutate(x_date = paste0(substr(x_date,2,5),"/",substr(x_date,7,8)) )%>% 
-  mutate(evol = round_half_up( ((ipc / lag(ipc)) -1 ) *100 , 1) )
 
-ipc_evol_annuel_gra <- ipc_evol_annuel %>%
-  filter (!is.na(evol) )
-
-#Ajouter les libellés des dates
-
-ipc_evol_annuel_gra <- ipc_evol_annuel_gra %>% 
+ipc_evol_annuel_gra <- ipc_evol_annuel_gra %>%
   mutate(
-    date_x_date =  as.Date(paste0(ipc_evol_annuel_gra$x_date,'/01')),
-    libelle_mois = format(date_x_date,"%B %Y"),
-    max_val = evol == max(evol),
-    min_val = evol == min(evol)
+    x_label = str_to_sentence(format(as.Date(x_date), "%B %Y")),  # Texte d'affichage
+    x_label = factor(x_label, levels = x_label)  # Facteur ordonné
+  )
+
+# 1. Calculez les valeurs min et max de la colonne 'evol'
+min_evol <- min(ipc_evol_annuel_gra$evol, na.rm = TRUE)
+max_evol <- max(ipc_evol_annuel_gra$evol, na.rm = TRUE)
+
+# 2. Définissez une petite marge (ex: 10% de l'amplitude totale)
+marge <- (max_evol - min_evol) * 0.10
+y_min_axis <- floor((min_evol - marge) * 2) / 2
+y_max_axis <- ceiling((max_evol + marge) * 2) / 2
+graph_variation_annuelle <- ggplot(
+  data = ipc_evol_annuel_gra,
+  aes(x = x_label, y = evol, group = 1)
+) +
+  scale_y_continuous(
+    limits = c(y_min_axis, y_max_axis), 
+    breaks = scales::pretty_breaks(n = 6),
+  )+
+  geom_line(color = "#bd4a47", linewidth = 2) +
+  geom_point(color = "black", size = 2.5) +
+  # geom_text(
+  #   aes(label = evol, y = evol + ifelse(evol == max(evol), -0.5, 0.5)),
+  #   color = "black", size = 4, fontface = "bold"
+  # ) +
+  
+  geom_hline(yintercept = 0, color = "gray20", linewidth = 1) +
+  labs(x = "Période", y = "Évolution (%)") +
+  theme_minimal(base_size = 13) +
+  theme(
+    axis.title.x = element_blank(),  # Supprime le titre de l'axe X
+    axis.title.y = element_blank(),
+    axis.text.x = element_text(
+      size = 14, family = "Times New Roman",
+      color = "black", face = "bold", angle = 270, vjust = 0.5, margin = margin(t = -12) 
+    ),
+    axis.text.y = element_text(
+      size = 18, face = "bold",
+      family = "Times New Roman", color = "black"
+    ),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line.y = element_line(color = "black", linewidth = 1)
   )
 
 
+ipc_evol_mensuel_gra <- readRDS("AAA_Essais/Graphique/ipc_evol_mensuel_gra.rds")
 
-ggplot2::ggplot(data=ipc_evol_annuel_gra, 
-                aes(x=libelle_mois, 
-                    y=evol,
-                    group=1 )) +
-  scale_y_continuous(labels = function(y) paste0(y, "%"))+
-  geom_line(color = "red",linewidth = 1) +
-  geom_hline(yintercept=0, col="black", linewidth=1) +
-  geom_point(size=1.5)  +
-  xlab("") +
-  ylab("") +
-  ggtitle("1-Évolution du taux de la variation annuelle (%) de
-l’indice des prix à la consommation pour le mois de: ")  +
-  theme(plot.title = element_text(size= 16) , 
-        axis.title = element_text(size= 13) ,
-        axis.text.y = element_text(size= 10,
-                                   face="bold"),
-        axis.text.x = element_text(size = 10, 
-                                   angle = 270, 
-                                   vjust = 0.5, 
-                                   hjust = 0.5,
-                                   face = "bold"),
-        
-        )
-       
+
+ipc_evol_mensuel_gra$x_date <- ym(gsub("/", "-", ipc_evol_mensuel_gra$x_date))
+
+ggsave("graph_variation_mensuelle.png", plot = graph_variation_annuelle, width = 16, height = 10, units = "cm", dpi = 300)
+#EVolution mensuelle
+
+ipc_evol_mensuel_gra <- ipc_evol_mensuel_gra %>%
+  mutate(
+    x_label = str_to_sentence(format(as.Date(x_date), "%B %Y")),  # Texte d'affichage
+    x_label = factor(x_label, levels = x_label)  # Facteur ordonné
+  )
+
+# 1. Calculez les valeurs min et max de la colonne 'evol'
+min_evol <- min(ipc_evol_mensuel_gra$evol, na.rm = TRUE)
+max_evol <- max(ipc_evol_mensuel_gra$evol, na.rm = TRUE)
+
+# 2. Définissez une petite marge (ex: 10% de l'amplitude totale)
+marge <- (max_evol - min_evol) * 0.10
+y_min_axis <- floor((min_evol - marge) * 2) / 2
+y_max_axis <- ceiling((max_evol + marge) * 2) / 2
+
+ggplot(
+  data = ipc_evol_mensuel_gra,
+  aes(x = x_label, y = evol, group = 1)
+) +
+  scale_y_continuous(
+    limits = c(y_min_axis,y_max_axis), 
+    breaks = scales::pretty_breaks(n = 6),
+  )+
+  geom_line(color = "#bd4a47", linewidth = 2) +
+  geom_point(color = "black", size = 2.5) +
+  # geom_text(
+  #   aes(label = evol, y = evol + ifelse(evol == max(evol), -0.5, 0.5)),
+  #   color = "black", size = 4, fontface = "bold"
+  # ) +
+  
+  geom_hline(yintercept = 0, color = "gray20", linewidth = 1) +
+  labs(x = "Période", y = "Évolution (%)") +
+  theme_minimal(base_size = 13) +
+  theme(
+    axis.title.x = element_blank(),  # Supprime le titre de l'axe X
+    axis.title.y = element_blank(),
+    axis.text.x = element_text(
+      size = 14, family = "Times New Roman",
+      color = "black", face = "bold", angle = 270, vjust = 0.5, margin = margin(t = -12) , hjust=0
+    ),
+    axis.text.y = element_text(
+      size = 18, face = "bold",
+      family = "Times New Roman", color = "black"
+    ),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.line.y = element_line(color = "black", linewidth = 1)
+  )

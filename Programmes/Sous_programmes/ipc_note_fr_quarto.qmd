@@ -1,0 +1,85 @@
+---
+title-meta: "Indice des Prix à la Consommation - Juin 2025"
+subtitle-meta: "Direction Régionale de Tanger - Tétouan - Al Hoceima"
+author-meta: "Haut-Commissariat au Plan, Direction de la Statistique"
+format:
+  docx:
+    reference-doc: templates/template_note_fr.docx
+    toc: false
+    pandoc-args: ["--metadata=title:", "--metadata=subtitle:", "--metadata=author"]
+    prefer-html: false
+params:
+  p_mois_courant: 'p_2025_08'
+  langue: "fr"
+  code_ville: "10"
+knitr:
+  opts_chunk:
+    echo: false
+    warning: false
+    message: false
+    dev: "png"
+    dpi: 300
+---
+
+```{r}
+#| message: false
+#| warning: false
+#| include: false
+
+# Définir p_mois_courant à partir du paramètre
+p_mois_courant <- params$p_mois_courant
+langue <- params$langue
+code_ville <- params$code_ville
+
+# Exécuter le script
+source("../Sous_programmes/retrouver_donnees.R", local = TRUE)
+
+
+# Appeler la fonction
+resultat <- retrouver_donnees(p_mois_courant,code_ville,langue)
+```
+
+::: {custom-style="ipc_titre_1_center"}
+Note d’Information de la Direction Régionale de Tanger-Tétouan-Al Hoceima
+:::
+
+::: {custom-style="ipc_titre_0"}
+INDICE DES PRIX À LA CONSOMMATION `r resultat$ville`
+:::
+
+::: {custom-style="ipc_para_0"}
+`r resultat$p01` `r resultat$p02`
+:::
+
+::: {custom-style="ipc_corps"}
+`r resultat$p03` `r resultat$p04`
+:::
+::: {custom-style="ipc_corps"}
+`r resultat$p05` `r resultat$p06`
+:::
+
+::: {custom-style="ipc_corps"}
+**Sur un an,** `r resultat$p07`
+:::
+::: {custom-style="ipc_corps"}
+`r resultat$p08` `r resultat$p09` 
+:::
+
+
+::: {custom-style="ipc_titre_0"}
+`r resultat$p11_num` `r resultat$p11`
+:::
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 6
+#| fig-height: 4
+#| fig-cap: ""
+
+# On appelle simplement l'objet que tu as déjà créé
+resultat$p12
+```
+::: {custom-style="ipc_corps"}
+`r resultat$p13`
+:::

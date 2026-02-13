@@ -43,7 +43,6 @@ options(knitr.table.html.attr = "quarto-disable-processing=true")
 source(file="Tableau1_note.R")
 ```
 
-
 ![](en_tete.jpg)
 
 ## En Août 2025, l'indice des prix à la consommation au niveau national a augmenté de 0,5% par rapport au mois précédent et a accru de 0,3% sur une année entière.
@@ -59,7 +58,6 @@ source(file="Tableau1_note.R")
   </w:pPr>
 </w:p>
 ```
-
 ```{=openxml}
 <w:p>
   <w:pPr>
@@ -72,10 +70,7 @@ source(file="Tableau1_note.R")
   <w:r><w:t> </w:t></w:r>
 </w:p>
 ```
-
-
 `r strrep("x", 1600)`
-
 
 ```{=openxml}
 <w:p>
@@ -144,13 +139,9 @@ ft
   <w:r><w:t> </w:t></w:r>
 </w:p>
 ```
-
 `r strrep("x", 600)`
- 
 
 ### 1-Évolution du taux de la variation annuelle (%) de l’indice des prix à la consommation pour le mois d’Août
-
-
 
 ```{=openxml}
 <w:p>
@@ -163,5 +154,3 @@ ft
   </w:pPr>
 </w:p>
 ```
-
-
