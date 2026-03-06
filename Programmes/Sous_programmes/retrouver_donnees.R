@@ -12,7 +12,7 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
   
   #cat(">>> p_mois_courant reçu dans le script:", p_mois_courant, "\n")
    # p_mois_courant = 'p_2025_11'
-   # langue='ang'
+   # langue='fr'
    # code_ville='10'
 
   #Retrouver les variables à utiliser dans le GLUE final ou bien dans les fonctions
@@ -161,9 +161,9 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
   p10_vars <- get_p10_vars(df_evol_12mois,langue)
   liste_min_div_non_alim_12mois_moins <- p10_vars[1]
   liste_max_div_non_alim_12mois_plus <- p10_vars[2]
-  ############################p12#######################
-  #graphique
-  ipc_evol_annuel_gra <- get_evol_annuel_gra(code_ville,ipc_histo,var_analyse)
+  ############################p11#######################
+  #graphique annuel
+  #ipc_evol_annuel_gra <- get_evol_annuel_gra(code_ville,ipc_histo,var_analyse)
   graph_variation_annuelle <- dessiner_graphique_evol_annuel(ipc_evol_annuel_gra,langue)
   p11_num <- case_when(
     code_ville == '17'  ~ "1-",
@@ -181,18 +181,28 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
     evol_12mois < 0  ~ "p13_moins",
     TRUE ~ "p13_neutre"
   )
+
+  
   ############################p14#######################
-  #graphique
-  ipc_evol_menseulle_gra <- get_evol_annuel_gra(code_ville,ipc_histo,var_analyse)
-  graph_variation_annuelle <- dessiner_graphique_evol_annuel(ipc_evol_annuel_gra,langue)
-  p11_num <- case_when(
-    code_ville == '17'  ~ "1-",
-    code_ville == '08'  ~ "5-",
-    code_ville == '10'  ~ "3-",
+  #graphique mensuel
+  #ipc_evol_mensuel_gra <- get_evol_mensuel_gra(code_ville,ipc_histo,var_analyse)
+  graph_variation_mensuelle <- dessiner_graphique_evol_mensuel(ipc_evol_mensuel_gra,langue)
+  p14_num <- case_when(
+    code_ville == '17'  ~ "2-",
+    code_ville == '08'  ~ "6-",
+    code_ville == '10'  ~ "4-",
     TRUE ~ ''
   )
-  p11_variable = 'p11'
-  p12 <- graph_variation_annuelle
+  p14_variable = 'p14'
+  p15 <- graph_variation_mensuelle
+  
+  #############################p16#######################
+  p16_variable <- case_when(
+    evol_1mois > 0  ~ "p16_plus",
+    evol_1mois < 0  ~ "p16_moins",
+    TRUE ~ "p16_neutre"
+  )
+  
   #consituter un dataframe qui contient le code et le texte
   
   df_variables <- data.frame(var_redaction = c(
@@ -207,7 +217,9 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
     p09_variable,
     p10_variable,
     p11_variable,
-    p13_variable
+    p13_variable,
+    p14_variable,
+    p16_variable
     )
     )
   readaction_template <- read.xlsx("Input/redaction_template.xlsx")
@@ -228,7 +240,9 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
   p11 <- glue(get_variable_texte(df_redaction,'p11',langue))
   p12 <- p12
   p13 <- glue(get_variable_texte(df_redaction,'p13',langue))
-  
+  p14 <- glue(get_variable_texte(df_redaction,'p14',langue))
+  p15 <- p15
+  p16 <- glue(get_variable_texte(df_redaction,'p16',langue))
   
   if (p05=='NA') {
     p05 <- ''
@@ -250,7 +264,11 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
     p11_num = p11_num,
     p11 = p11,
     p12 = p12,
-    p13 = p13
+    p13 = p13,
+    p14_num = p14_num,
+    p14 = p14,
+    p15 = p15,
+    p16 = p16
   )
   return(resultat)
 }

@@ -1,3 +1,4 @@
+load("Programmes/Sous_programmes/illustrations.RData")
 dessiner_graphique_evol_annuel <- function(ipc_evol_annuel_gra,langue){
   
 ipc_evol_annuel_gra$x_date <- ym(gsub("/", "-", ipc_evol_annuel_gra$x_date))

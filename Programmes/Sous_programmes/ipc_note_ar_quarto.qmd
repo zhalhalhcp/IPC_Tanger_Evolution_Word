@@ -79,3 +79,21 @@ resultat$p12
 ::: {custom-style="ipc_corps"}
 `r resultat$p13`
 :::
+
+::: {custom-style="ipc_titre_0"}
+`r resultat$p14_num` `r resultat$p14`
+:::
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 6
+#| fig-height: 4
+#| fig-cap: ""
+
+# On appelle simplement l'objet que tu as déjà créé
+resultat$p15
+```
+::: {custom-style="ipc_corps"}
+`r resultat$p16`
+::: nbbbbbbbbbbb
