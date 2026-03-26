@@ -8,8 +8,8 @@ library(glue)
 library(dplyr)
 library(lubridate)
 
-# parametres : exemple periode_maj <- "2025_01"
-periode_maj <- "2025_11"
+# parametres: identifiant_periode <- "aaaa_mm"
+periode_maj <- "2026_02"
 
 # annee
 annee <- substr(periode_maj,1,4)

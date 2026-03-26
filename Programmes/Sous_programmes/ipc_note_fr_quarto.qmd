@@ -101,3 +101,16 @@ resultat$p15
 ::: {custom-style="ipc_corps"}
 `r resultat$p16`
 :::
+
+::: {custom-style="ipc_para_0"}
+`r resultat$p17_num` `r resultat$p17`
+:::
+
+```{r}
+
+resultat$p19
+```
+
+::: {custom-style="ipc_para_0"}
+`r resultat$p20`
+:::

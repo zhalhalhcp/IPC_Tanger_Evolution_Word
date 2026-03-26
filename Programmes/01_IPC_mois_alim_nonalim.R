@@ -4,8 +4,9 @@
 ######   01_IPC_mois_alim_nonalim.R 
 rm(list=ls())  # Vidage memoire
 
-# parametres : exemple identifiant_periode <- "2025_01"
-identifiant_periode <- "2025_09"
+# parametres: identifiant_periode <- "aaaa_mm"
+identifiant_periode <- "2026_02"
+
 
 library(dplyr)
 library(glue)

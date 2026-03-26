@@ -1,10 +1,11 @@
 library(glue)
-
-mois_courant <- "p_2025_11"
+load("Programmes/Sous_programmes/illustrations.RData")
+code_ville <- ville
+mois_courant <- "p_2026_02"
 liste_villes <- c('10','08','17')
 libelle_villes <- c('tanger','tetouan','alhoceima')
 alias_mois_courant <- substr(mois_courant,3,9)
-chemin = paste0("Rapports_mensuels/",substr(mois_courant, 3,9))
+chemin = paste0("Rapports_mensuels/Mois",substr(mois_courant, 3,9))
 
 if (!dir.exists(chemin)) {
   dir.create(chemin)
@@ -12,7 +13,7 @@ if (!dir.exists(chemin)) {
 } else {
   message("Le dossier existe déjà : ", chemin)
 }
-for (code_ville in liste_villes){
+
 
   for (langue in c('fr','ar','ang')) {
     
@@ -41,5 +42,5 @@ for (code_ville in liste_villes){
     
     print(glue("Fin du programme {langue}"))
   }
-}
+
 

@@ -3,9 +3,9 @@
 ### s'execute dans le chunk preparation_donnees
 # programme : ZZ_Preparation_donnees_analyse.R
 
-##############################################################
-### Traitement des dates utiles pour rapport mensuel (RM)  ###
-##############################################################
+###########################################################################
+### Traitement des dates utiles pour rapport mensuel avec libellés(RM)  ###
+###########################################################################
 date_analyse <- ym(periode_analyse) 
 date_analyse_m1 <- date_analyse -months(1)  # date_analyse -1mois
 date_analyse_m2 <- date_analyse -months(2)  # date_analyse -2mois
@@ -16,12 +16,19 @@ date_analyse_m13 <- date_analyse -months(13)  # date_analyse -13mois
 ### Valeur récupérées
 mois_analyse <- format(date_analyse, "%m")
 
-var_analyse <- format(date_analyse, "V%Y_%m")  # varaiable analyse
-var_analyse_m1 <- format(date_analyse_m1, "V%Y_%m") # varaiable analyse -1mois
-var_analyse_m2 <- format(date_analyse_m2, "V%Y_%m") # varaiable analyse -2mois
-var_analyse_m3 <- format(date_analyse_m3, "V%Y_%m") # varaiable analyse -3mois
-var_analyse_m12 <- format(date_analyse_m12, "V%Y_%m") # varaiable analyse -12mois
-var_analyse_m13 <- format(date_analyse_m13, "V%Y_%m") # varaiable analyse -13mois
+var_analyse <- format(date_analyse, "V%Y_%m")  # variable analyse
+var_analyse_m1 <- format(date_analyse_m1, "V%Y_%m") # variable analyse -1mois
+var_analyse_m2 <- format(date_analyse_m2, "V%Y_%m") # variable analyse -2mois
+var_analyse_m3 <- format(date_analyse_m3, "V%Y_%m") # variable analyse -3mois
+var_analyse_m12 <- format(date_analyse_m12, "V%Y_%m") # variable analyse -12mois
+var_analyse_m13 <- format(date_analyse_m13, "V%Y_%m") # variable analyse -13mois
+
+lib_mois_annee_m <- tools::toTitleCase(format(date_analyse, "%B %Y"))
+lib_mois_annee_m1 <- tools::toTitleCase(format(date_analyse_m1, "%B %Y"))
+lib_mois_annee_m2 <- tools::toTitleCase(format(date_analyse_m2, "%B %Y"))
+lib_mois_annee_m3 <- tools::toTitleCase(format(date_analyse_m3, "%B %Y"))
+lib_mois_annee_m12 <- tools::toTitleCase(format(date_analyse_m12, "%B %Y"))
+lib_mois_annee_m13 <- tools::toTitleCase(format(date_analyse_m13, "%B %Y"))
 
 #####################################################
 ## Libellé de la ville pour rapport mensuel (RM)  ###
@@ -31,50 +38,13 @@ l_ville <- readRDS("../../Data_locales/lib_ville.rds") %>%
   select(libville) %>%
   pull()
 
-########################################################
-###  Libelle des mois et années pour rapport mensuel ###
-########################################################
-
-libmois <- readRDS("../../Data_communes/libmois.rds")
-#### l_mois
-l_mois <- libmois %>%
-  filter(mois == mois_analyse)  %>%
-  select(libmois) %>%
-  pull()
-
-#### l_mois1
-l_mois1 <- libmois %>%
-  filter(mois == substr(as.character(date_analyse_m1),6,7))  %>%
-  select(libmois) %>%
-  pull()
-a_mois1 <- substr(as.character(date_analyse_m1),1,4)
-
-#### l_mois2
-l_mois2 <- libmois %>%
-  filter(mois == substr(as.character(date_analyse_m2),6,7))  %>%
-  select(libmois) %>%
-  pull()
-a_mois2 <- substr(as.character(date_analyse_m2),1,4)
-
-#### l_mois3
-l_mois3 <- libmois %>%
- filter(mois == substr(as.character(date_analyse_m3),6,7))  %>%
- select(libmois) %>%
- pull()
-a_mois3 <- substr(as.character(date_analyse_m3),1,4)
-
-#### l_mois12
-l_mois12 <- libmois %>%
-  filter(mois == substr(as.character(date_analyse_m12),6,7))  %>%
-  select(libmois) %>%
-  pull()
-a_mois12 <- substr(as.character(date_analyse_m12),1,4)
-
 ################################################################
 ### Traitement fichier historique pour rapport mensuel (RM)  ###
 ################################################################
 
-ipc_histo <- readRDS("../../Data_locales/IPC_histo_dernier.rds")
+ipc_histo <- readRDS("../../Data_locales/IPC_histo_dernier.rds") %>% 
+  select(-libelle_diff)
+lib_produits <- readRDS("../../Data_communes/familles_produits.rds")
 
 ### Variables à conserver dans IPC_histo
 # pour T01 à T07
@@ -104,6 +74,7 @@ liste_variables <- sort(unique(c("code","libelle_diff",
 
 ipc_histo_reduit <- ipc_histo %>% 
   filter(ville ==  code_ville) %>% 
+  left_join(lib_produits, by = "code") %>% 
   select(all_of(liste_variables))
 
 ### DF : ipc_ensemble :
@@ -113,11 +84,14 @@ ipc_histo_reduit <- ipc_histo %>%
 
 ipc_ensemble <- ipc_histo_reduit %>%
   filter(code %in% c("000GEN","001ALIM","001NONALIM")) %>% 
-  mutate(evol_mens = round_half_up(((.data[[var_analyse]] / .data[[var_analyse_m1]]) -1) *100
+  mutate(indice_m12 = .data[[var_analyse_m12]],
+         indice_m1 = .data[[var_analyse_m1]],
+         indice_m = .data[[var_analyse]],
+         evol_mens = round_half_up(((.data[[var_analyse]] / .data[[var_analyse_m1]]) -1) *100
                            , 1 ) ,
          evol_an = round_half_up(((.data[[var_analyse]] / .data[[var_analyse_m12]]) -1) *100
                            , 1 ) ) %>% 
-  select (libelle_diff, evol_mens, evol_an)
+  select (libelle_diff, indice_m12,indice_m1,indice_m, evol_mens, evol_an)
  
 ### DF : ipc_alim - Secteur alimentaire
 ### T02 : Evolutions mensuelles et annuelles pour les produits alimentaires
@@ -128,11 +102,14 @@ ipc_ensemble <- ipc_histo_reduit %>%
 ipc_alim <- ipc_histo_reduit %>%
   filter ( code == "001ALIM" |
            (nchar(code) == 4 & substr(code,1,2) %in% c("01","02") ) ) %>% 
-  mutate(evol_mens = round_half_up(((.data[[var_analyse]] / .data[[var_analyse_m1]]) -1) *100
+  mutate(indice_m12 = .data[[var_analyse_m12]],
+         indice_m1 = .data[[var_analyse_m1]],
+         indice_m = .data[[var_analyse]],
+         evol_mens = round_half_up(((.data[[var_analyse]] / .data[[var_analyse_m1]]) -1) *100
                            , 1 ) ,
          evol_an = round_half_up(((.data[[var_analyse]] / .data[[var_analyse_m12]]) -1) *100
                          , 1 ) ) %>% 
-  select (code,libelle_diff, evol_mens, evol_an)
+  select (code,libelle_diff,indice_m12,indice_m1,indice_m, evol_mens, evol_an)
 
 ### DF : ipc_nonalim - Secteur non alimentaire
 ### T05 : Evolutions mensuelles et annuelles pour les produits non alimentaires
@@ -145,11 +122,14 @@ ipc_nonalim <- ipc_histo_reduit %>%
            (nchar(code) == 2 & 
               substr(code,1,2) %in% c("03","04","05","06","07","08",
                                       "09","10","11","12")  ) ) %>%
-  mutate(evol_mens = round_half_up(((.data[[var_analyse]] / .data[[var_analyse_m1]]) -1) *100
+  mutate(indice_m12 = .data[[var_analyse_m12]],
+         indice_m1 = .data[[var_analyse_m1]],
+         indice_m = .data[[var_analyse]],
+         evol_mens = round_half_up(((.data[[var_analyse]] / .data[[var_analyse_m1]]) -1) *100
                            , 1 ) ,
          evol_an = round_half_up(((.data[[var_analyse]] / .data[[var_analyse_m12]]) -1) *100
                          , 1 ) ) %>% 
-  select (code,libelle_diff, evol_mens, evol_an) 
+  select (code,libelle_diff,indice_m12,indice_m1,indice_m, evol_mens, evol_an)
 
 ### Graphique annuelle - ipc_evol_annuel et ipc_evol_annuel_gra
 ### G01 : Graphique de l'évolution annuelle en %
@@ -238,6 +218,7 @@ ipc_tableau <- ipc_histo_reduit %>%
                            code == "12" ~ "l14",
                            code == "GENERAL" ~ "l15" ,
                            TRUE ~ "lxx") ,
+         ponderation = if_else(code == "000GEN", 100 , ponderation) ,
          libelle_diff_tab_syn = if_else(code %in% c("000GEN","001ALIM","001NONALIM"),
                                         libelle_diff,
                                         paste0(code," - ", libelle_diff) ),
@@ -250,7 +231,40 @@ ipc_tableau <- ipc_histo_reduit %>%
   arrange(ligne) %>%
   select(all_of(liste_var_sortie_synth))          
 
+save(ipc_evol_annuel_gra,
+     ipc_evol_mensuel_gra,
+     ipc_tableau,
+     lib_mois_annee_m,
+     lib_mois_annee_m1,
+     lib_mois_annee_m2,
+     lib_mois_annee_m3,
+     lib_mois_annee_m12, file = "illustrations.RData")
 
+### Base de donnees stat
+### -------------------------
+
+bds <- readRDS("bds.rds")
+
+liste_var_bds <- c(var_analyse)
+
+bds_ville <- ipc_histo_reduit %>%
+select(code, all_of(liste_var_bds)) %>%
+  mutate(coicop = case_when(code == "000GEN" ~ "GENERAL",
+                            code == "001ALIM" ~ "PRODUITS ALIMENTAIRES",
+                            code == "001NONALIM" ~ "PRODUITS NON ALIMENTAIRES",
+                            substr(code,3,4) == "" ~ code,
+                            TRUE ~ NA),
+         période = paste0(substr(periode_analyse,5,6),"-",substr(periode_analyse,1,4)),
+         # période = periode_analyse,
+         ville = code_ville) %>%
+  filter(!is.na(coicop)) %>%
+  rename(ipc = .data[[var_analyse]] ) %>%
+  select (période, ville, coicop, ipc)
+
+bds <- bds %>%
+    bind_rows(bds_ville)
+
+saveRDS(bds,file = "bds.rds")
 
 ####################
 ### FIN PGM      ###

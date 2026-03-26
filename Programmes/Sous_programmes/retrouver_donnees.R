@@ -1,7 +1,7 @@
 setwd("../..")
 source(file="Programmes/Sous_programmes/fonctions.R")
 source(file="Programmes/Sous_programmes/fonctions_graphiques.R")
-
+source(file="Programmes/Sous_programmes/fonctions_tableaux.R")
 #retrouver_donnees(p_mois_courant,code_ville,langue)
 retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
   library(lubridate)
@@ -203,6 +203,29 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
     TRUE ~ "p16_neutre"
   )
   
+  ############################p17#######################
+  table_name <- case_when(
+    langue =='fr' ~ "Tableau",
+    langue == 'ar' ~ "جدول",
+    langue == 'ang' ~ "Table",
+    TRUE ~ ''
+  )
+
+  p17_num <- case_when(
+    code_ville == '17'  ~ paste(table_name,"2:"),
+    code_ville == '08'  ~ paste(table_name,"3:"),
+    code_ville == '10'  ~ paste(table_name,"4:"),
+    TRUE ~ ''
+  )
+  p17_variable = 'p17'
+  ############################p19#######################
+
+  tableau_ipc <- dessiner_tableau(langue)
+
+  p19 <- tableau_ipc
+  
+  
+  p20_variable = 'p20'
   #consituter un dataframe qui contient le code et le texte
   
   df_variables <- data.frame(var_redaction = c(
@@ -219,7 +242,9 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
     p11_variable,
     p13_variable,
     p14_variable,
-    p16_variable
+    p16_variable,
+    p17_variable,
+    p20_variable
     )
     )
   readaction_template <- read.xlsx("Input/redaction_template.xlsx")
@@ -243,6 +268,9 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
   p14 <- glue(get_variable_texte(df_redaction,'p14',langue))
   p15 <- p15
   p16 <- glue(get_variable_texte(df_redaction,'p16',langue))
+  p17 <- glue(get_variable_texte(df_redaction,'p17',langue))
+  p19 <- p19
+  p20 <- glue(get_variable_texte(df_redaction,'p20',langue))
   
   if (p05=='NA') {
     p05 <- ''
@@ -268,7 +296,11 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
     p14_num = p14_num,
     p14 = p14,
     p15 = p15,
-    p16 = p16
+    p16 = p16,
+    p17_num = p17_num,
+    p17 = p17,
+    p19 = p19,
+    p20 = p20
   )
   return(resultat)
 }

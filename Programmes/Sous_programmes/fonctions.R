@@ -19,7 +19,7 @@ get_lib_ville <- function(code_ville,langue){
   }
   else{
     if (langue == 'ar'){
-      ville <- paste("مدينة",lib_ville)
+      ville <- paste("لمدينة",lib_ville)
     }
     else{
       ville <- paste("city of",lib_ville)

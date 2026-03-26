@@ -58,7 +58,7 @@ periode_analyse <- params$p_periode
 #| warning: false 
 #| message: false 
 
-# sous-prog_traitement_donnees
+# Sous-programme de préparation – traitement des donnees
 source(file="ZZ_Preparation_donnees_analyse.R")
 ```
 
@@ -69,9 +69,9 @@ source(file="ZZ_Preparation_donnees_analyse.R")
 #| message: false
  
 if (code_ville != "99") {
-      titre <- glue("Ville de {l_ville} en {l_mois}  {substr(periode_analyse,1,4)} ")
+      titre <- glue("Ville de {l_ville} en {lib_mois_annee_m} ")
 } else {
-     titre <- glue("{l_ville} en {l_mois}  {substr(periode_analyse,1,4)} ")
+     titre <- glue("{l_ville} en {lib_mois_annee_m} ")
 }
 ```
 
@@ -87,6 +87,9 @@ if (code_ville != "99") {
 
 kable(ipc_ensemble,
       col.names = c("Secteur",
+                    lib_mois_annee_m12,
+                    lib_mois_annee_m1,
+                    lib_mois_annee_m,
                     "Evolution mensuelle",
                     "Evolution annuelle"),
       format.args = list(decimal.mark = ","),
@@ -96,7 +99,9 @@ kable(ipc_ensemble,
                 full_width = FALSE,
                 position = "left",
                 font_size = 14) %>%
-  column_spec(1, width = "6cm") %>%
+  column_spec(1, width = "6cm") %>% 
+  column_spec(c(2,3,4),width = "3.3cm",extra_css = "word-wrap: break-word;") %>%
+  column_spec(c(5,6),width = "2.8cm",extra_css = "word-wrap: break-word;") %>%
   row_spec(1, bold = T)
 ```
 
@@ -110,9 +115,11 @@ kable(ipc_ensemble,
 
 
 ipc_alim %>% 
-  select (code,libelle_diff,evol_mens,evol_an) %>%
   kable(col.names = c("Code",
                     "Produits",
+                    lib_mois_annee_m12,
+                    lib_mois_annee_m1,
+                    lib_mois_annee_m,
                     "Evolution mensuelle",
                     "Evolution annuelle" ) ,
        format.args = list(decimal.mark = ","),
@@ -122,17 +129,23 @@ ipc_alim %>%
                 full_width = F, 
                 position = "left", 
                 font_size = 14) %>% 
-    row_spec(1, bold = T) %>% 
-    column_spec(2, width = "12cm") 
- 
+    row_spec(1, bold = T) %>%  
+    column_spec(1, width = "2.5cm") %>%
+    column_spec(2, width = "10cm",extra_css = "word-wrap: break-word;") %>%
+  column_spec(c(3,4,5),width = "3.3cm",extra_css = "word-wrap: break-word;") %>%
+  column_spec(c(6,7),width = "2.8cm",extra_css = "word-wrap: break-word;")
+  
+
 # Mensuel 
 ipc_alim_mens <- ipc_alim %>% 
-  select (code, libelle_diff, evol_mens) %>%  
+  select(code,libelle_diff,indice_m1,indice_m, evol_mens) %>% 
   arrange(desc(evol_mens))  
  
 ipc_alim_mens %>%  
   kable(col.names = c("Code",
                       "Produits", 
+                      lib_mois_annee_m1,
+                      lib_mois_annee_m,
                       "Evolution mensuelle" ),
         format.args = list(decimal.mark = ","), 
         escape = F, 
@@ -142,16 +155,22 @@ ipc_alim_mens %>%
                 position = "left", 
                 font_size = 14)  %>% 
   row_spec(which(ipc_alim_mens$code == "001ALIM"), bold = T) %>% 
-  column_spec(2, width = "12cm") 
- 
+  column_spec(1, width = "2.5cm") %>%
+  column_spec(2, width = "10cm",extra_css = "word-wrap: break-word;") %>%
+  column_spec(c(3,4),width = "3.3cm",extra_css = "word-wrap: break-word;") %>%
+  column_spec(5,width = "2.8cm",extra_css = "word-wrap: break-word;")
+  
+  
 # Annuel 
 ipc_alim_an <- ipc_alim %>% 
-  select (code,libelle_diff,  evol_an) %>%  
+    select(code,libelle_diff,indice_m12,indice_m, evol_an) %>% 
   arrange(desc(evol_an))  
 
 ipc_alim_an %>% 
   kable(col.names = c("Code",
                       "Produits", 
+                      lib_mois_annee_m12,
+                      lib_mois_annee_m,
                       "Evolution annuelle" ), 
         format.args = list(decimal.mark = ","), 
         escape = F, 
@@ -161,7 +180,10 @@ ipc_alim_an %>%
                 position = "left", 
                 font_size = 14)  %>% 
   row_spec(which(ipc_alim_an$code == "001ALIM"), bold = T) %>%  
-  column_spec(2, width = "14cm")
+  column_spec(1, width = "2.5cm") %>%
+  column_spec(2, width = "10cm",extra_css = "word-wrap: break-word;") %>%
+  column_spec(c(3,4),width = "3.3cm",extra_css = "word-wrap: break-word;") %>%
+  column_spec(5,width = "2.8cm",extra_css = "word-wrap: break-word;")
 ```
 
 # Secteur non alimentaire
@@ -173,11 +195,13 @@ ipc_alim_an %>%
 #| message: false
 
 ipc_nonalim %>%
-  select (code,libelle_diff,evol_mens,evol_an) %>%
-    kable(col.names = c("Code",
-                        "Produits",
-                        "Evolution mensuelle",
-                        "Evolution annuelle" ),
+  kable(col.names = c("Code",
+                    "Produits",
+                    lib_mois_annee_m12,
+                    lib_mois_annee_m1,
+                    lib_mois_annee_m,
+                    "Evolution mensuelle",
+                    "Evolution annuelle" ) ,
         format.args = list(decimal.mark = ","),
         escape = F,
         caption ="<span style='font-size:20px'>Evolutions mensuelles et annuelles<br>pour les produits non alimentaires</span>") %>%
@@ -186,17 +210,22 @@ ipc_nonalim %>%
                 position = "left",
                 font_size = 14) %>%
   row_spec(1, bold = T) %>%
-  column_spec(2, width = "12cm")
+  column_spec(1, width = "2.5cm") %>%
+  column_spec(2, width = "10cm",extra_css = "word-wrap: break-word;") %>%
+  column_spec(c(3,4,5),width = "3.3cm",extra_css = "word-wrap: break-word;") %>%
+  column_spec(c(6,7),width = "2.8cm",extra_css = "word-wrap: break-word;")
 
 # Mensuel
 
 ipc_nonalim_mens <- ipc_nonalim %>%
-  select (code,libelle_diff,  evol_mens) %>%
-  arrange(desc(evol_mens))
+  select(code,libelle_diff,indice_m1,indice_m, evol_mens) %>% 
+  arrange(desc(evol_mens)) 
 
 ipc_nonalim_mens %>%
   kable(col.names = c("Code",
-                      "Produits", 
+                      "Produits",
+                      lib_mois_annee_m1,
+                      lib_mois_annee_m,
                       "Evolution mensuelle" ),
        format.args = list(decimal.mark = ","),
        escape = F,
@@ -206,17 +235,22 @@ ipc_nonalim_mens %>%
                position = "left",
                font_size = 14)  %>%
   row_spec(which(ipc_nonalim_mens$code == "001NONALIM"), bold = T) %>%
-  column_spec(2, width = "12cm")
+  column_spec(1, width = "2.5cm") %>%
+  column_spec(2, width = "10cm",extra_css = "word-wrap: break-word;") %>%
+  column_spec(c(3,4),width = "3.3cm",extra_css = "word-wrap: break-word;") %>%
+  column_spec(5,width = "2.8cm",extra_css = "word-wrap: break-word;")
  
 # Annuel
  
 ipc_nonalim_an <- ipc_nonalim %>%
-    select (code,libelle_diff,  evol_an) %>%
+    select(code,libelle_diff,indice_m12,indice_m, evol_an) %>% 
     arrange(desc(evol_an))
 
 ipc_nonalim_an %>%
  kable(col.names = c("Code",
                      "Produits", 
+                      lib_mois_annee_m12,
+                      lib_mois_annee_m,
                      "Evolution annuelle" ),
        format.args = list(decimal.mark = ","),
        escape = F,
@@ -226,7 +260,10 @@ ipc_nonalim_an %>%
                position = "left",
                font_size = 14)  %>%
   row_spec(which(ipc_nonalim_an$code == "001NONALIM"), bold = T) %>%
-  column_spec(2, width = "14cm")
+  column_spec(1, width = "2.5cm") %>%
+  column_spec(2, width = "10cm",extra_css = "word-wrap: break-word;") %>%
+  column_spec(c(3,4),width = "3.3cm",extra_css = "word-wrap: break-word;") %>%
+  column_spec(5,width = "2.8cm",extra_css = "word-wrap: break-word;")
 
 ```
 
@@ -243,59 +280,20 @@ ipc_nonalim_an %>%
 #| fig-width: 8
 #| fig-height: 5
 
-library(lubridate)
-ipc_evol_annuel_gra$x_date <- ym(gsub("/", "-", ipc_evol_annuel_gra$x_date))
-
-
-
-
-ipc_evol_annuel_gra <- ipc_evol_annuel_gra %>%
-  mutate(
-    x_label = str_to_sentence(format(as.Date(x_date), "%B %Y")),  # Texte d'affichage
-    x_label = factor(x_label, levels = x_label)  # Facteur ordonné
-  )
-
-# 1. Calculez les valeurs min et max de la colonne 'evol'
-min_evol <- min(ipc_evol_annuel_gra$evol, na.rm = TRUE)
-max_evol <- max(ipc_evol_annuel_gra$evol, na.rm = TRUE)
-
-# 2. Définissez une petite marge (ex: 10% de l'amplitude totale)
-marge <- (max_evol - min_evol) * 0.10
-
-ggplot(
-  data = ipc_evol_annuel_gra,
-  aes(x = x_label, y = evol, group = 1)
-) +
-  scale_y_continuous(
-    limits = c(min_evol - marge, max_evol + marge), 
-    breaks = scales::pretty_breaks(n = 6),
-  )+
-  geom_line(color = "#bd4a47", linewidth = 2) +
-  geom_point(color = "black", size = 2.5) +
-  # geom_text(
-  #   aes(label = evol, y = evol + ifelse(evol == max(evol), -0.5, 0.5)),
-  #   color = "black", size = 4, fontface = "bold"
-  # ) +
-  
-  geom_hline(yintercept = 0, color = "gray20", linewidth = 1) +
-  labs(x = "Période", y = "Évolution (%)") +
-  theme_minimal(base_size = 13) +
-  theme(
-    axis.title.x = element_blank(),  # Supprime le titre de l'axe X
-    axis.title.y = element_blank(),
-    axis.text.x = element_text(
-      size = 14, family = "Times New Roman",
-      color = "black", face = "bold", angle = 270, vjust = 0.5, margin = margin(t = -12) 
-    ),
-    axis.text.y = element_text(
-      size = 18, face = "bold",
-      family = "Times New Roman", color = "black"
-    ),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    axis.line.y = element_line(color = "black", linewidth = 1)
-  )
-
+ggplot2::ggplot(data=ipc_evol_annuel_gra, 
+                aes(x=x_date, 
+                    y=evol,
+                    group=1 )) +
+  geom_line(color = "red",linewidth = 1) +
+  geom_hline(yintercept=0, col="black", linewidth=1) +
+  geom_point(size=1.5)  +
+  xlab("Période") +
+  ylab("Evolution (%)") +
+  ggtitle("Graphique de l'évolution annuelle en %")  +
+  theme(plot.title = element_text(size= 16) , 
+       axis.title = element_text(size= 13) ,
+       axis.text.x = element_text(size= 10),
+       axis.text.y = element_text(size= 10) )
 
 ```
 
@@ -334,58 +332,21 @@ ipc_evol_annuel %>%
 #| classes: .my_class_gra
 #| fig-width: 8
 #| fig-height: 5
-ipc_evol_mensuel_gra$x_date <- ym(gsub("/", "-", ipc_evol_mensuel_gra$x_date))
 
-
-#EVolution mensuelle
-
-ipc_evol_mensuel_gra <- ipc_evol_mensuel_gra %>%
-  mutate(
-    x_label = str_to_sentence(format(as.Date(x_date), "%B %Y")),  # Texte d'affichage
-    x_label = factor(x_label, levels = x_label)  # Facteur ordonné
-  )
-
-# 1. Calculez les valeurs min et max de la colonne 'evol'
-min_evol <- min(ipc_evol_mensuel_gra$evol, na.rm = TRUE)
-max_evol <- max(ipc_evol_mensuel_gra$evol, na.rm = TRUE)
-
-# 2. Définissez une petite marge (ex: 10% de l'amplitude totale)
-marge <- (max_evol - min_evol) * 0.10
-
-ggplot(
-  data = ipc_evol_mensuel_gra,
-  aes(x = x_label, y = evol, group = 1)
-) +
-  scale_y_continuous(
-    limits = c(min_evol - marge, max_evol + marge), 
-    breaks = scales::pretty_breaks(n = 6),
-  )+
-  geom_line(color = "#bd4a47", linewidth = 2) +
-  geom_point(color = "black", size = 2.5) +
-  # geom_text(
-  #   aes(label = evol, y = evol + ifelse(evol == max(evol), -0.5, 0.5)),
-  #   color = "black", size = 4, fontface = "bold"
-  # ) +
-  
-  geom_hline(yintercept = 0, color = "gray20", linewidth = 1) +
-  labs(x = "Période", y = "Évolution (%)") +
-  theme_minimal(base_size = 13) +
-  theme(
-    axis.title.x = element_blank(),  # Supprime le titre de l'axe X
-    axis.title.y = element_blank(),
-    axis.text.x = element_text(
-      size = 14, family = "Times New Roman",
-      color = "black", face = "bold", angle = 270, vjust = 0.5, margin = margin(t = -12) 
-    ),
-    axis.text.y = element_text(
-      size = 18, face = "bold",
-      family = "Times New Roman", color = "black"
-    ),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    axis.line.y = element_line(color = "black", linewidth = 1)
-  )
-
+ggplot2::ggplot(data=ipc_evol_mensuel_gra,
+                aes(x=x_date,
+                    y=evol,
+                    group=1 )) +
+  geom_line(color = "red",linewidth = 1) +
+  geom_hline(yintercept=0, col="black", linewidth=1) +
+  geom_point(size=1.5)  +
+  xlab("Période") +
+  ylab("Evolution (%)") +
+  ggtitle("Graphique de l'évolution mensuelle en %")  +
+  theme(plot.title = element_text(size= 16),
+        axis.title = element_text(size= 13),
+        axis.text.x = element_text(size= 8),
+        axis.text.y = element_text(size= 10))
 
 ```
 
@@ -421,19 +382,19 @@ ipc_evol_mensuel %>%
 #| message: false
   
 if (code_ville != "99") {
-      titre_tabsyn <- glue("<span style='font-size:20px'>Indice des prix à la consommation de la ville de  {l_ville} : {l_mois} {substr(periode_analyse,1,4)} (base 2017 :100)</span>")
+      titre_tabsyn <- glue("<span style='font-size:20px'>Indice des prix à la consommation de la ville de  {l_ville} : {lib_mois_annee_m} (base 2017 :100)</span>")
 } else {
-      titre_tabsyn <- glue("<span style='font-size:20px'>Indice des prix à la consommation au niveau national : {l_mois} {substr(periode_analyse,1,4)} (base 2017 :100)</span>")
+      titre_tabsyn <- glue("<span style='font-size:20px'>Indice des prix à la consommation au niveau national : {lib_mois_annee_m} (base 2017 :100)</span>")
 }
 
 ipc_tableau %>% 
   kable(col.names = linebreak( c("",
                                  "",
-                                 paste0(l_mois12," ",a_mois12 ),
-                                 paste0(l_mois3," ",a_mois3 ),
-                                 paste0(l_mois2," ",a_mois2 ),
-                                 paste0(l_mois1," ",a_mois1 ),
-                                 paste0(l_mois," ",substr(periode_analyse,1,4) ),
+                                 lib_mois_annee_m12,
+                                 lib_mois_annee_m3 ,
+                                 lib_mois_annee_m2,
+                                 lib_mois_annee_m1,
+                                 lib_mois_annee_m ,
                                  "mois",
                                  "3 mois", 
                                  "12 mois" ) ,
@@ -441,7 +402,7 @@ ipc_tableau %>%
          format.args = list(decimal.mark = ","),
          align = c("lrrrrrrrrr"),
          escape = F,
-         caption = titre_tabsyn ) %>% 
+         caption = titre_tabsyn ) %>%  
      kable_styling(full_width = F,
                  position = "left",
                  font_size = 14 ) %>% 
