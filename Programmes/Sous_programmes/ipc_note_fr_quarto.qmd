@@ -62,7 +62,7 @@ INDICE DES PRIX À LA CONSOMMATION `r resultat$ville`
 **Sur un an,** `r resultat$p07`
 :::
 ::: {custom-style="ipc_corps"}
-`r resultat$p08` `r resultat$p09` 
+`r resultat$p08` `r resultat$p09` `r resultat$p10` 
 :::
 
 
