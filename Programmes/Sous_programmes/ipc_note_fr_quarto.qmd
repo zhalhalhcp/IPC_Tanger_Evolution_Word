@@ -52,7 +52,7 @@ INDICE DES PRIX À LA CONSOMMATION `r resultat$ville`
 :::
 
 ::: {custom-style="ipc_corps"}
-`r resultat$p03` `r resultat$p04`
+**Sur un mois,** `r resultat$p03` `r resultat$p04`
 :::
 ::: {custom-style="ipc_corps"}
 `r resultat$p05` `r resultat$p06`

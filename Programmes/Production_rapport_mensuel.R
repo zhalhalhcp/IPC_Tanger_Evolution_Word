@@ -12,7 +12,7 @@ analyse <- "2026_02"
 library(dplyr)
 library(lubridate)
 library(glue)
-library(zip)
+library(zip) 
 library(openxlsx)
 
 ### Création d'une liste des villes de la région

@@ -11,9 +11,9 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
   library(tidyverse)
   
   #cat(">>> p_mois_courant reçu dans le script:", p_mois_courant, "\n")
-   # p_mois_courant = 'p_2025_11'
+   # p_mois_courant = 'p_2026_02'
    # langue='fr'
-   # code_ville='10'
+   # code_ville='08'
 
   #Retrouver les variables à utiliser dans le GLUE final ou bien dans les fonctions
   ville <- get_lib_ville(code_ville,langue)
