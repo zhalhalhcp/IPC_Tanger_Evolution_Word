@@ -1,6 +1,11 @@
 #setwd("../..")
 library(glue)
 library(stringr)
+
+fmt <- function(x) {
+  gsub("\\.", ",", sprintf("%.1f", x))
+}
+
 lib_mois <- readRDS(("Input/lib_mois.rds"))
 lib_villes <- readRDS(("Input/lib_villes.rds"))
 
@@ -65,16 +70,17 @@ get_df_div_non_alim <- function(df_evol){
 #Fonction qui prends un dataframe et rassemble les 
 #lignes ayant les memes evolutions en formant le texte adéquat
 rassembler_meme_evolution <- function(df_evolution){
+  #df_evolution = df_evol_pdt_alim_1mois
   resultats_liste <- list()
   #df_evolution <- df_evol_pdt_alim_1mois
   # 2. Préparation des données
   df_evolution <- df_evolution %>% rename(evolution = 5)
   list_df <- df_evolution %>% group_split(evolution)
-  ldf <- list_df[[1]]
-  ldf <- ldf %>% 
-    mutate(fr = paste(prep_fr,fr))
-  
-  ldf
+  # ldf <- list_df[[1]]
+  # ldf <- ldf %>% 
+  #   mutate(fr = paste(prep_fr,fr))
+  # 
+  # ldf
   for (i in seq_along(list_df)) {
     ldf <- list_df[[i]] %>% 
       mutate(
@@ -89,15 +95,15 @@ rassembler_meme_evolution <- function(df_evolution){
         fr = paste(fr, collapse = ", "),
         ar = paste(ar, collapse = " ، "),
         ang = paste(ang, collapse = ", "),
-        evolution = first(evolution)
+        evolution = first(evolution),
+        nb = nrow(ldf)
       ) %>%
+      # Remplacement de la dernière virgule par le "et" / "و"
       mutate(
-        # Remplacement de la dernière virgule par le "et" / "و"
-        fr = str_replace(fr, ",([^,]*)$", " et\\1"),
-        ar = str_replace(ar, " ،([^،]*)$", " و\\1"), # Correction pour l'arabe
-        ang = str_replace(ang, ",([^,]*)$", " and\\1") # "and" au lieu de "et" pour l'anglais
-      )
-    
+          fr = if (nb > 1) str_replace(fr, ",([^,]*)$", " et\\1") else fr,
+          ar = if (nb > 1) str_replace(ar, " ،([^،]*)$", " و\\1") else ar,
+          ang = if (nb > 1) str_replace(ang, ",([^,]*)$", " and\\1") else ang
+        )
     # 4. On ajoute le résultat du groupe dans la liste
     resultats_liste[[i]] <- groupe_traite
   }
@@ -114,9 +120,9 @@ get_phrase <- function(df_resultats, langue) {
   # df_resultat <- df_evol_1mois
   df_temp <- df_resultats %>% 
     mutate(
-      fr  = paste0(fr, " de ", abs(evolution), "%"),
-      ar  = paste0(ar, "ب", abs(evolution), "% \u200F"),# \u200F aide Word pour la direction
-      ang = paste0(ang, " by ", abs(evolution), "%")
+      fr  = paste0(fr, " de ", fmt(abs(evolution)), "%"),
+      ar  = paste0(ar, "ب", fmt(abs(evolution)), "% \u200F"),# \u200F aide Word pour la direction
+      ang = paste0(ang, " by ", fmt(abs(evolution)), "%")
     )
   
   # 2. Extraction de la colonne correspondant à la langue
@@ -144,6 +150,46 @@ get_phrase <- function(df_resultats, langue) {
   
   return(phrase)
 }
+
+#fonction qui prend en param un dataframe ville,fr,ar,ang,evolution et retroune un dataframe contenant un phrase pour chaque langue
+get_phrase2 <- function(df_resultats, langue) {
+  #df_resultats <- df_liste_div_non_alim_neutre
+  # 1. Préparation des textes selon l'évolution
+  #df_resultats <- df_liste_div_non_alim_12mois_plus
+  df_temp <- df_resultats %>% 
+    mutate(
+      fr  = paste0(" de ", fmt(abs(evolution)), "% pour la division ",fr),
+      ar  = paste0(ar, "ب", fmt(abs(evolution)), "% \u200F"),# \u200F aide Word pour la direction
+      ang = paste0(ang, " by ", fmt(abs(evolution)), "%")
+    )
+  
+  # 2. Extraction de la colonne correspondant à la langue
+  phrase <- ''
+  elements <- df_temp[[langue]]
+  n <- length(elements)
+  if(n>1) {
+    elements_1 <- elements[1:(n-1)]
+    elements_2 <- elements[n]
+    
+    # 3. Construction de la phrase finale avec le bon séparateur
+    if (langue == "ar") {
+      phrase_1 <- paste(elements_1, collapse = "، ") # Virgule arabe
+      phrase <- paste(phrase_1 , "و" ,  elements_2)
+    } else if (langue == "fr"){
+      phrase_1 <- paste(elements_1, collapse = ", ")
+      phrase <- paste( phrase_1 ,"et" , elements_2)# Virgule latine
+    }else if (langue == "ang"){
+      phrase_1 <- paste(elements_1, collapse = ", ")
+      phrase <- paste(phrase_1 , "and" , elements_2)# Virgule latine
+    }
+  }else{
+    phrase <- elements[1]
+  }
+  
+  return(phrase)
+}
+
+
 
 get_p04_vars <- function(df_evol_1mois,langue){
   df_evol_pdt_alim_1mois <- get_df_pdt_alim(df_evol_1mois)
@@ -213,13 +259,14 @@ get_p10_vars <- function(df_evol_12mois,langue){
     filter(evolution < 0)%>% 
     arrange(evolution) %>% 
     slice(1)
-  liste_max_div_non_alim_12mois_plus <- get_phrase(df_liste_div_non_alim_12mois_plus,langue)
-  liste_min_div_non_alim_12mois_moins <- get_phrase(df_liste_div_non_alim_12mois_moins,langue)
+  liste_max_div_non_alim_12mois_plus <- get_phrase2(df_liste_div_non_alim_12mois_plus,langue)
+  liste_min_div_non_alim_12mois_moins <- get_phrase2(df_liste_div_non_alim_12mois_moins,langue)
   
   return(c(liste_min_div_non_alim_12mois_moins,liste_max_div_non_alim_12mois_plus))
 }
 
 get_variable_texte <- function(df_redaction,variable_code,langue){
+  #variable_code='p04'
   variable_texte <- df_redaction %>% 
     filter(code==variable_code) %>% 
     select(3) %>% 
@@ -267,3 +314,4 @@ get_evol_mensuel_gra <- function(code_ville,ipc_histo,var_analyse){
     filter (!is.na(evol) )
   return(ipc_evol_annuel_gra)
 }
+

@@ -6,7 +6,7 @@
 rm(list=ls())
 
 ###--- Paramètres à renseigner analyse <- "aaaa_mm"          ------###
-analyse <- "2026_02"
+analyse <- "2026_07"
 ###----------------------------------------------------------------###
 
 library(dplyr)
@@ -71,12 +71,12 @@ if (date_analyse > date_max_histo | year(date_analyse) < "2020") {
   print("Vérifier votre mois !!!!")
 }   else {
   
- # creation du reperoire pour les sorties s'il n'existe pas
+  # creation du reperoire pour les sorties s'il n'existe pas
   if (!dir.exists(glue("Rapports_mensuels/Mois{analyse}")) ) {
     dir.create(glue("Rapports_mensuels/Mois{analyse}"))
   }
   
- # creation table bds à vide  
+  # creation table bds à vide  
   bds <- data.frame()
   saveRDS(bds,file = "Programmes/Sous_programmes/bds.rds")
   
@@ -122,8 +122,7 @@ fichiers <- list.files(path=glue("Rapports_mensuels/Mois{analyse}") ,
 
 # Création de l'archive
 zip::zip( zipfile = glue("Rapports_mensuels/Mois{analyse}/M{analyse}.zip"),
-  files = fichiers
+          files = fichiers
 )
 
 print("Fin des traitements")
-

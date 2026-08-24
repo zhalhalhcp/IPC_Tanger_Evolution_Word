@@ -9,7 +9,7 @@ library(dplyr)
 library(lubridate)
 
 # parametres: identifiant_periode <- "aaaa_mm"
-periode_maj <- "2026_02"
+periode_maj <- "2026_07"
 
 # annee
 annee <- substr(periode_maj,1,4)

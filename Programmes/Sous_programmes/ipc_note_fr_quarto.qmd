@@ -19,6 +19,8 @@ knitr:
     message: false
     dev: "png"
     dpi: 300
+    fig-width: 3.2
+    fig-height: 1.8
 ---
 
 ```{r}
@@ -38,18 +40,47 @@ source("../Sous_programmes/retrouver_donnees.R", local = TRUE)
 # Appeler la fonction
 resultat <- retrouver_donnees(p_mois_courant,code_ville,langue)
 ```
+```{r}
+#| echo: false
+library(flextable)
+library(officer)
 
-::: {custom-style="ipc_titre_1_center"}
-Note d’Information de la Direction Régionale de Tanger-Tétouan-Al Hoceima
-:::
-
-::: {custom-style="ipc_titre_0"}
-INDICE DES PRIX À LA CONSOMMATION `r resultat$ville`
-:::
+data.frame(
+  col1 = paste0("Indice des prix à la consommation - ", resultat$p00),
+  col2 = paste0(
+  str_to_upper(str_sub(resultat$ville, 1, 1)),
+  str_sub(resultat$ville, 2)
+  )
+) |>
+  flextable() |>
+  delete_part(part = "header") |>
+  set_table_properties(layout = "fixed", width = 1) |>
+  width(j = 1, width = 6.30) |>
+  width(j = 2, width = 1.575) |>
+  border_remove() |>
+  border(j = 1, border.bottom = fp_border(color = "#F8A180", width = 1.5)) |>
+  border(j = 2, border.bottom = fp_border(color = "#F8A180", width = 1.5)) |>
+  bg(j = 2, bg = "#F8A180") |>
+  font(fontname = "Times New Roman", part = "body") |>
+  bold(part = "body") |>
+  color(color = "#8D4354", part = "body") |>
+  align(j = 2, align = "center")
+```
 
 ::: {custom-style="ipc_para_0"}
 `r resultat$p01` `r resultat$p02`
 :::
+```{=openxml}
+<w:p><w:pPr><w:sectPr>
+<w:type w:val="continuous"/>
+  <w:pgSz w:w="11906" w:h="16838"/>
+  <w:pgMar w:top="284" w:bottom="284" w:left="283" w:right="283"
+           w:header="708" w:footer="708" w:gutter="0"/>
+  <w:cols w:num="1"/>
+</w:sectPr></w:pPr></w:p>
+```
+
+
 
 ::: {custom-style="ipc_corps"}
 **Sur un mois,** `r resultat$p03` `r resultat$p04`
@@ -66,22 +97,19 @@ INDICE DES PRIX À LA CONSOMMATION `r resultat$ville`
 :::
 
 
+
 ::: {custom-style="ipc_titre_0"}
 `r resultat$p11_num` `r resultat$p11`
 :::
 ```{r}
 #| echo: false
-#| message: false
-#| warning: false
-#| fig-width: 6
-#| fig-height: 4
-#| fig-cap: ""
+#| out-width: "9.30cm"
+#| out-height: "5.73cm"
 
-# On appelle simplement l'objet que tu as déjà créé
-resultat$p12
+knitr::include_graphics(resultat$p12)
 ```
-::: {custom-style="ipc_corps"}
-`r resultat$p13`
+::: {custom-style="ipc_legende"}
+[`r resultat$p13_0`]{.underline} `r resultat$p13`
 :::
 
 ::: {custom-style="ipc_titre_0"}
@@ -89,28 +117,57 @@ resultat$p12
 :::
 ```{r}
 #| echo: false
-#| message: false
-#| warning: false
-#| fig-width: 6
-#| fig-height: 4
-#| fig-cap: ""
+#| out-width: "9.30cm"
+#| out-height: "7.01cm"
 
-# On appelle simplement l'objet que tu as déjà créé
-resultat$p15
+knitr::include_graphics(resultat$p15)
 ```
-::: {custom-style="ipc_corps"}
-`r resultat$p16`
+::: {custom-style="ipc_legende"}
+[`r resultat$p13_0`]{.underline} `r resultat$p16`
 :::
+
+```{=openxml}
+<w:p>
+  <w:pPr>
+    <w:sectPr>
+      <w:type w:val="continuous"/>
+      <w:pgSz w:w="11906" w:h="16838"/>
+      <w:pgMar w:top="284" w:bottom="284" w:left="283" w:right="283" w:header="708" w:footer="708" w:gutter="0"/>
+      <w:cols w:num="2" w:space="200"/>
+    </w:sectPr>
+  </w:pPr>
+</w:p>
+```
 
 ::: {custom-style="ipc_para_0"}
 `r resultat$p17_num` `r resultat$p17`
 :::
+
+
 
 ```{r}
 
 resultat$p19
 ```
 
-::: {custom-style="ipc_para_0"}
-`r resultat$p20`
+::: {custom-style="ipc_legende_tableau"}
+[`r resultat$p20_0`]{.underline} `r resultat$p20`
 :::
+::: {custom-style="ipc_pied_page"}
+Angle Avenue Ibn Tachafine et Avenue Ibn Toumart B.P.104 Tanger  
+****<span style="color:red">Tél</span>:0539940698****Fax:0539940364 
+<span style="color:red">Site Web</span>: www.hcp.ma/region-tanger Email:hcp.dr.tanger@hcp.ma
+:::
+:::
+```{=openxml}
+<w:p>
+  <w:pPr>
+    <w:sectPr>
+      <w:type w:val="continuous"/>
+      <w:pgSz w:w="11906" w:h="16838"/>
+      <w:pgMar w:top="284" w:bottom="284" w:left="283" w:right="283" w:header="708" w:footer="708" w:gutter="0"/>
+      <w:cols w:num="1"/>
+    </w:sectPr>
+  </w:pPr>
+</w:p>
+```

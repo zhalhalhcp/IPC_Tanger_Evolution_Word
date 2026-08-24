@@ -89,9 +89,9 @@ dessiner_tableau_ar <- function(langue){
   
   ft <- ft %>%
     flextable::font(fontname = "Times New Roman", part = "all") %>%
-    flextable::fontsize(size = 8, part = "all") %>%
+    flextable::fontsize(size = 7, part = "all") %>%
     flextable::bold(bold = TRUE, part = "all") %>%
-    padding(padding.top = 1.8, padding.bottom = 1.8, part = "all") %>%
+    padding(padding.top = 0, padding.bottom = 0, part = "all") %>%
     colformat_num(big.mark = " ", decimal.mark = ",") %>%
     hline( i = c(1,3,4,14,15), border = fp_border()) %>%
     hline_bottom(part="header",border = fp_border() ) %>%
@@ -147,9 +147,9 @@ dessiner_tableau_fr_ang <- function(langue){
   
   ft <- ft %>%
     flextable::font(fontname = "Times New Roman", part = "all") %>%
-    flextable::fontsize(size = 8, part = "all") %>%
+    flextable::fontsize(size = 7, part = "all") %>%
     flextable::bold(bold = TRUE, part = "all") %>%
-    padding(padding.top = 1.8, padding.bottom = 1.8, part = "all") %>%
+    padding(padding.top = 0, padding.bottom = 0, part = "all") %>%
     colformat_num(big.mark = " ", decimal.mark = ",") %>%
     hline( i = c(1,3,4,14,15), border = fp_border()) %>%
     hline_bottom(part="header",border = fp_border() ) %>%
@@ -157,16 +157,25 @@ dessiner_tableau_fr_ang <- function(langue){
     hline(i=1,part="header",border = fp_border() )
   ft <- ft %>%
     flextable::align(align = "center", part = "header") %>%
-    flextable::line_spacing(space = 1.8, part = "header")
+    flextable::line_spacing(space = 1, part = "header")
   
   # Fond colorés de certaines lignes
   ft <- ft %>% flextable::bg(i = c(1,4,15), bg = "#FBD4B4", part = "body")
   ft <- flextable::set_table_properties(ft, layout = "fixed") %>%
     flextable::width(j=1:10,
-                     width=c(7.8,1.5,rep(1.4, 5),rep(1, 3)),
+                     width=c(7,1.8,rep(1.6, 5),rep(1, 3)),
                      unit = "cm")  %>%
     flextable::align(j = 1, align = "left") %>% 
     flextable::align(j = 3:7, align = "center") 
+  # Forcer la hauteur minimale des lignes body
+  ft <- ft %>%
+    height(height = 0.4, unit = "cm", part = "body") %>%
+    hrule(rule = "exact", part = "body")
+  
+  # Forcer la hauteur minimale des lignes header
+  ft <- ft %>%
+    height(height = 0.7, unit = "cm", part = "header") %>%
+    hrule(rule = "exact", part = "header")
   return(ft)
 }
 

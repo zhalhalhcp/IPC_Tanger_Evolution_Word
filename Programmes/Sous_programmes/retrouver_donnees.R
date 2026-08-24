@@ -2,7 +2,6 @@ setwd("../..")
 source(file="Programmes/Sous_programmes/fonctions.R")
 source(file="Programmes/Sous_programmes/fonctions_graphiques.R")
 source(file="Programmes/Sous_programmes/fonctions_tableaux.R")
-#retrouver_donnees(p_mois_courant,code_ville,langue)
 retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
   library(lubridate)
   library(dplyr)
@@ -11,9 +10,9 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
   library(tidyverse)
   
   #cat(">>> p_mois_courant reçu dans le script:", p_mois_courant, "\n")
-   # p_mois_courant = 'p_2026_02'
+   # p_mois_courant = 'p_2026_05'
    # langue='fr'
-   # code_ville='08'
+   # code_ville='10'
 
   #Retrouver les variables à utiliser dans le GLUE final ou bien dans les fonctions
   ville <- get_lib_ville(code_ville,langue)
@@ -24,14 +23,16 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
   date_analyse_m2 <- date_analyse - months(2)
   date_analyse_m3 <- date_analyse - months(3)
   date_analyse_m12 <- date_analyse - years(1)
-  date_analyse_m13 <- date_analyse - months(13)
+  #date_analyse_m13 <- date_analyse - months(13)
+  #date_analyse_m24 <- date_analyse - years(2)
   
   var_analyse <- format(date_analyse, "V%Y_%m")
   var_analyse_m1 <- format(date_analyse_m1, "V%Y_%m")
   var_analyse_m2 <- format(date_analyse_m2, "V%Y_%m")
   var_analyse_m3 <- format(date_analyse_m3, "V%Y_%m")
   var_analyse_m12 <- format(date_analyse_m12, "V%Y_%m")
-  var_analyse_m13 <- format(date_analyse_m13, "V%Y_%m")
+  # var_analyse_m13 <- format(date_analyse_m13, "V%Y_%m")
+  # var_analyse_m24 <- format(date_analyse_m24, "V%Y_%m")
 
   #ipc_histo <- readRDS("../../Data_locales/IPC_histo_dernier.rds")
   ipc_histo <- readRDS("Data_locales/IPC_histo_dernier.rds")
@@ -48,7 +49,8 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
       evol_12mois = round(((.data[[var_analyse]] / .data[[var_analyse_m12]]) -1) *100,1)
     )
   
-  readaction_template <- read.xlsx("Input/redaction_template.xlsx")
+  #print(paste0("Input/redaction_template_",code_ville,".xlsx"))
+  readaction_template <- read.xlsx(paste0("Input/redaction_template_",code_ville,".xlsx"))
   
   #############################p01#######################
   #variables de p01
@@ -164,17 +166,20 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
   ############################p11#######################
   #graphique annuel
   #ipc_evol_annuel_gra <- get_evol_annuel_gra(code_ville,ipc_histo,var_analyse)
-  graph_variation_annuelle <- dessiner_graphique_evol_annuel(ipc_evol_annuel_gra,langue)
+  url_graphe_annuel <- glue("../../Rapports_mensuels/Mois{annee_courante}_{mois_courant}/Graphique_variation_annuelle{annee_courante}_{mois_courant}_Ville{code_ville}_{langue}.png")
+  #graph_variation_annuelle <- dessiner_graphique_evol_annuel(ipc_evol_annuel_gra,langue)
   p11_num <- case_when(
-    code_ville == '17'  ~ "1-",
-    code_ville == '08'  ~ "5-",
-    code_ville == '10'  ~ "3-",
+    code_ville == '17'  ~ "4-",
+    code_ville == '08'  ~ "3-",
+    code_ville == '10'  ~ "1-",
     TRUE ~ ''
   )
   p11_variable = 'p11'
-  p12 <- graph_variation_annuelle
+  p12 <- url_graphe_annuel
   
   #############################p13#######################
+  
+  p13_0_variable <- 'p13_0'
   
   p13_variable <- case_when(
     evol_12mois > 0  ~ "p13_plus",
@@ -186,17 +191,33 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
   ############################p14#######################
   #graphique mensuel
   #ipc_evol_mensuel_gra <- get_evol_mensuel_gra(code_ville,ipc_histo,var_analyse)
-  graph_variation_mensuelle <- dessiner_graphique_evol_mensuel(ipc_evol_mensuel_gra,langue)
+  #graph_variation_mensuelle <- dessiner_graphique_evol_mensuel(ipc_evol_mensuel_gra,langue)
   p14_num <- case_when(
-    code_ville == '17'  ~ "2-",
-    code_ville == '08'  ~ "6-",
-    code_ville == '10'  ~ "4-",
+    code_ville == '17'  ~ "6-",
+    code_ville == '08'  ~ "4-",
+    code_ville == '10'  ~ "2-",
     TRUE ~ ''
   )
   p14_variable = 'p14'
-  p15 <- graph_variation_mensuelle
+  url_graphe_mensuel <- glue("../../Rapports_mensuels/Mois{annee_courante}_{mois_courant}/Graphique_variation_mensuelle{annee_courante}_{mois_courant}_Ville{code_ville}_{langue}.png")
+  p15 <- url_graphe_mensuel
   
   #############################p16#######################
+  annee_m2 <- format(date_analyse_m2, "%Y")
+  mois_m2 <- format(date_analyse_m2, "%m")
+  lib_mois_m2 <- lib_mois%>% 
+    filter(code == mois_m2) %>% 
+    select(langue) %>% 
+    pull()
+  
+  evol_mois1_mois2 <- ipc_histo %>% 
+    filter(ville ==  code_ville) %>% 
+    select(c("ville","code","libelle_diff",var_analyse_m1,var_analyse_m2)) %>% 
+    filter(code=='000GEN')%>% 
+    mutate(
+      evol_m1_m2 = round(((.data[[var_analyse_m1]] / .data[[var_analyse_m2]]) -1) *100,1)
+    ) %>% pull(evol_m1_m2)
+  
   p16_variable <- case_when(
     evol_1mois > 0  ~ "p16_plus",
     evol_1mois < 0  ~ "p16_moins",
@@ -224,7 +245,7 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
 
   p19 <- tableau_ipc
   
-  
+  p20_0_variable = 'p20_0'
   p20_variable = 'p20'
   #consituter un dataframe qui contient le code et le texte
   
@@ -240,18 +261,21 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
     p09_variable,
     p10_variable,
     p11_variable,
+    p13_0_variable,
     p13_variable,
     p14_variable,
     p16_variable,
     p17_variable,
+    p20_0_variable,
     p20_variable
     )
     )
-  readaction_template <- read.xlsx("Input/redaction_template.xlsx")
+  #readaction_template <- read.xlsx("Input/redaction_template.xlsx")
   df_redaction <- df_variables %>% 
     left_join(readaction_template, by = c("var_redaction" = "variable")) %>% 
     select("code","var_redaction",langue)
   
+  p00 <- glue("{lib_mois_courant} {annee_courante}")
   p01 <- glue(get_variable_texte(df_redaction,'p01',langue))
   p02 <- glue(get_variable_texte(df_redaction,'p02',langue))
   p03 <- glue(get_variable_texte(df_redaction,'p03',langue))
@@ -264,12 +288,14 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
   p10 <- glue(get_variable_texte(df_redaction,'p10',langue))
   p11 <- glue(get_variable_texte(df_redaction,'p11',langue))
   p12 <- p12
+  p13_0 <- glue(get_variable_texte(df_redaction,'p13_0',langue))
   p13 <- glue(get_variable_texte(df_redaction,'p13',langue))
   p14 <- glue(get_variable_texte(df_redaction,'p14',langue))
   p15 <- p15
   p16 <- glue(get_variable_texte(df_redaction,'p16',langue))
   p17 <- glue(get_variable_texte(df_redaction,'p17',langue))
   p19 <- p19
+  p20_0 <- glue(get_variable_texte(df_redaction,'p20_0',langue))
   p20 <- glue(get_variable_texte(df_redaction,'p20',langue))
   
   if (p05=='NA') {
@@ -279,6 +305,7 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
      
   resultat <- list(
     ville = ville,
+    p00 = p00,
     p01 = p01,
     p02 = p02,
     p03 = p03,
@@ -292,6 +319,7 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
     p11_num = p11_num,
     p11 = p11,
     p12 = p12,
+    p13_0 = p13_0,
     p13 = p13,
     p14_num = p14_num,
     p14 = p14,
@@ -300,6 +328,7 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
     p17_num = p17_num,
     p17 = p17,
     p19 = p19,
+    p20_0 = p20_0,
     p20 = p20
   )
   return(resultat)

@@ -5,7 +5,7 @@
 rm(list=ls())  # Vidage memoire
 
 # parametres: identifiant_periode <- "aaaa_mm"
-identifiant_periode <- "2026_02"
+identifiant_periode <- "2026_07"
 
 
 library(dplyr)

@@ -1,7 +1,7 @@
 library(glue)
 load("Programmes/Sous_programmes/illustrations.RData")
 code_ville <- ville
-mois_courant <- "p_2026_02"
+mois_courant <- "p_2026_07"
 liste_villes <- c('10','08','17')
 libelle_villes <- c('tanger','tetouan','alhoceima')
 alias_mois_courant <- substr(mois_courant,3,9)

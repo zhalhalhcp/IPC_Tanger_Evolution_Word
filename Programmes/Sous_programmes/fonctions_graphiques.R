@@ -32,30 +32,35 @@ graph_variation_annuelle <- ggplot(
     limits = c(y_min_axis, y_max_axis), 
     breaks = scales::pretty_breaks(n = 6),
   )+
-  geom_line(color = "#bd4a47", linewidth = 2) +
-  geom_point(color = "black", size = 2.5) +
+  geom_line(color = "#bd4a47", linewidth = 0.8) +
+  geom_point(color = "black", size = 1.2) +
   # geom_text(
   #   aes(label = evol, y = evol + ifelse(evol == max(evol), -0.5, 0.5)),
   #   color = "black", size = 4, fontface = "bold"
   # ) +
   
-  geom_hline(yintercept = 0, color = "gray20", linewidth = 1) +
+  geom_hline(yintercept = 0, color = "gray20", linewidth = 0.5) +
   labs(x = "Période", y = "Évolution (%)") +
-  theme_minimal(base_size = 13) +
+  theme_minimal(base_size = 9) +
   theme(
     axis.title.x = element_blank(),  # Supprime le titre de l'axe X
     axis.title.y = element_blank(),
     axis.text.x = element_text(
-      size = 14, family = "Times New Roman",
+      size = 9, family = "Times New Roman",
       color = "black", face = "bold", angle = 270, vjust = 0.5, margin = margin(t = -12) 
     ),
     axis.text.y = element_text(
-      size = 18, face = "bold",
+      size = 10, face = "bold",
       family = "Times New Roman", color = "black"
     ),
+    # afficher les graduations
+    axis.ticks = element_line(color = "black"),
+    axis.ticks.length = unit(0.15, "cm"),
+    
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
-    axis.line.y = element_line(color = "black", linewidth = 1)
+    axis.line.y = element_line(color = "black", linewidth = 0.5)
+    
   )
 return(graph_variation_annuelle)
 }
@@ -93,30 +98,36 @@ dessiner_graphique_evol_mensuel <- function(ipc_evol_mensuel_gra,langue){
       limits = c(y_min_axis, y_max_axis), 
       breaks = scales::pretty_breaks(n = 6),
     )+
-    geom_line(color = "#bd4a47", linewidth = 2) +
-    geom_point(color = "black", size = 2.5) +
+    geom_line(color = "#bd4a47", linewidth = 0.8) +
+    geom_point(color = "black", size = 1.2) +
     # geom_text(
     #   aes(label = evol, y = evol + ifelse(evol == max(evol), -0.5, 0.5)),
     #   color = "black", size = 4, fontface = "bold"
     # ) +
     
-    geom_hline(yintercept = 0, color = "gray20", linewidth = 1) +
+    geom_hline(yintercept = 0, color = "gray20", linewidth = 0.5) +
     labs(x = "Période", y = "Évolution (%)") +
-    theme_minimal(base_size = 13) +
+    theme_minimal(base_size = 9) +
     theme(
       axis.title.x = element_blank(),  # Supprime le titre de l'axe X
       axis.title.y = element_blank(),
       axis.text.x = element_text(
-        size = 14, family = "Times New Roman",
-        color = "black", face = "bold", angle = 270, vjust = 0.5, margin = margin(t = -12) 
+        size = 9, 
+        family = "Times New Roman",
+        color = "black", face = "bold", 
+        angle = -90, 
+        vjust = 0.5, 
+        margin = margin(t = -12) 
       ),
       axis.text.y = element_text(
-        size = 18, face = "bold",
+        size = 10, face = "bold",
         family = "Times New Roman", color = "black"
       ),
+      axis.ticks = element_line(color = "black"),
+      axis.ticks.length = unit(0.15, "cm"),
       panel.grid.major = element_blank(),
       panel.grid.minor = element_blank(),
-      axis.line.y = element_line(color = "black", linewidth = 1)
+      axis.line.y = element_line(color = "black", linewidth = 0.5)
     )
   return(graph_variation_mensuelle)
 }

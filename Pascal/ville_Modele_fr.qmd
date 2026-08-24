@@ -114,7 +114,6 @@ Indice des prix à la consommation - `r resultat$lib_mois_annee_m`       �
   </w:pPr>
 </w:p>
 ```
-
 ::: {custom-style="ligne_separation"}
 **Sur un mois** `r resultat$phrase03`
 :::
