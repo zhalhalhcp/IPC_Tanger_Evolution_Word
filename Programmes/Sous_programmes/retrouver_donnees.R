@@ -61,6 +61,14 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
     filter(code == mois_courant) %>% 
     select(langue) %>% 
     pull()
+  
+  
+  lib_mois_courant_prep <- if (mois_courant %in% c("04", "08", "10")) {
+    glue("d'{lib_mois_courant}")
+  } else {
+    glue("de {lib_mois_courant}")
+  }
+
   #texte du p01
   p01_variable <- case_when(
     evol_1mois > 0  ~ "p01_plus",
@@ -233,9 +241,9 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
   )
 
   p17_num <- case_when(
-    code_ville == '17'  ~ paste(table_name,"2:"),
+    code_ville == '17'  ~ paste(table_name,"4:"),
     code_ville == '08'  ~ paste(table_name,"3:"),
-    code_ville == '10'  ~ paste(table_name,"4:"),
+    code_ville == '10'  ~ paste(table_name,"2:"),
     TRUE ~ ''
   )
   p17_variable = 'p17'
