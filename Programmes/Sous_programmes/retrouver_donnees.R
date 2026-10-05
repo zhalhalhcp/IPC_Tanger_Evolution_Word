@@ -10,9 +10,9 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
   library(tidyverse)
   
   #cat(">>> p_mois_courant reçu dans le script:", p_mois_courant, "\n")
-   # p_mois_courant = 'p_2026_05'
-   # langue='fr'
-   # code_ville='10'
+    p_mois_courant = 'p_2026_08'
+    langue='fr'
+    code_ville='10'
 
   #Retrouver les variables à utiliser dans le GLUE final ou bien dans les fonctions
   ville <- get_lib_ville(code_ville,langue)
@@ -124,15 +124,56 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
     TRUE ~ "p05_neutre",
   )
   #############################p06#######################
-  p06_variable <- case_when(
-    evol_non_alim_1mois > 0  ~ "p06_plus",
-    evol_non_alim_1mois < 0  ~ "p06_moins",
-    TRUE ~ "p06_neutre"
-  )
+  # p06_variable <- case_when(
+  #   evol_non_alim_1mois > 0  ~ "p06_plus",
+  #   evol_non_alim_1mois < 0  ~ "p06_moins",
+  #   TRUE ~ "p06_neutre"
+  # )
   p06_vars <- get_p06_vars(df_evol_1mois,langue)
   liste_div_non_alim_plus <- p06_vars[1]
   liste_div_non_alim_neutre <- p06_vars[2]
   liste_div_non_alim_moins <- p06_vars[3]
+  len_non_alim_plus <- p06_vars[4]
+  len_non_alim_neutre <- p06_vars[5]
+  len_non_alim_moins <- p06_vars[6]
+  
+  liste_p06_vars <- list()
+  if (len_non_alim_plus>1){
+    liste_p06_vars <- append(liste_p06_vars,'p06_plus')
+  }
+  
+  if(len_non_alim_plus==1){
+    liste_p06_vars <- append(liste_p06_vars,'p06_plus_1')
+  }
+
+  if ((len_non_alim_moins>0) || (len_non_alim_neutre>0)) {
+    liste_p06_vars <- append(liste_p06_vars,'p06_plus_moins_prep')
+  }
+  
+  if(len_non_alim_moins > 1){
+    liste_p06_vars <- append(liste_p06_vars,'p06_plus_moins')
+  }
+  
+  if(len_non_alim_moins == 1){
+    liste_p06_vars <- append(liste_p06_vars,'p06_plus_moins_1')
+  }
+  
+  if ((len_non_alim_moins>0) && (len_non_alim_neutre>0)) {
+    liste_p06_vars <- append(liste_p06_vars,'p06_plus_neutre_prep')
+  }
+  
+  if(len_non_alim_neutre > 1){
+    liste_p06_vars <- append(liste_p06_vars,'p06_plus_neutre')
+  }
+  
+  if(len_non_alim_neutre == 1){
+    liste_p06_vars <- append(liste_p06_vars,'p06_plus_neutre_1')
+  }
+  
+  
+
+  
+  liste_p06_vars
   
   #############################p07#######################
   
@@ -263,7 +304,7 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
     p03_variable,
     p04_variable,
     p05_variable,
-    p06_variable,
+    #p06_variable,
     p07_variable,
     p08_variable,
     p09_variable,
@@ -278,33 +319,37 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
     p20_variable
     )
     )
+  df_variables <- rbind(
+    df_variables,
+    data.frame(var_redaction = unlist(liste_p06_vars))
+  )
   #readaction_template <- read.xlsx("Input/redaction_template.xlsx")
   df_redaction <- df_variables %>% 
     left_join(readaction_template, by = c("var_redaction" = "variable")) %>% 
     select("code","var_redaction",langue)
   
   p00 <- glue("{lib_mois_courant} {annee_courante}")
-  p01 <- glue(get_variable_texte(df_redaction,'p01',langue))
-  p02 <- glue(get_variable_texte(df_redaction,'p02',langue))
-  p03 <- glue(get_variable_texte(df_redaction,'p03',langue))
-  p04 <- glue(get_variable_texte(df_redaction,'p04',langue))
-  p05 <- glue(get_variable_texte(df_redaction,'p05',langue))
-  p06 <- glue(get_variable_texte(df_redaction,'p06',langue))
-  p07 <- glue(get_variable_texte(df_redaction,'p07',langue))
-  p08 <- glue(get_variable_texte(df_redaction,'p08',langue))
-  p09 <- glue(get_variable_texte(df_redaction,'p09',langue))
-  p10 <- glue(get_variable_texte(df_redaction,'p10',langue))
-  p11 <- glue(get_variable_texte(df_redaction,'p11',langue))
+  p01 <- glue(get_variable_texte(df_redaction,'p01'))
+  p02 <- glue(get_variable_texte(df_redaction,'p02'))
+  p03 <- glue(get_variable_texte(df_redaction,'p03'))
+  p04 <- glue(get_variable_texte(df_redaction,'p04'))
+  p05 <- glue(get_variable_texte(df_redaction,'p05'))
+  p06 <- glue(get_variable_texte(df_redaction,'p06'))
+  p07 <- glue(get_variable_texte(df_redaction,'p07'))
+  p08 <- glue(get_variable_texte(df_redaction,'p08'))
+  p09 <- glue(get_variable_texte(df_redaction,'p09'))
+  p10 <- glue(get_variable_texte(df_redaction,'p10'))
+  p11 <- glue(get_variable_texte(df_redaction,'p11'))
   p12 <- p12
-  p13_0 <- glue(get_variable_texte(df_redaction,'p13_0',langue))
-  p13 <- glue(get_variable_texte(df_redaction,'p13',langue))
-  p14 <- glue(get_variable_texte(df_redaction,'p14',langue))
+  p13_0 <- glue(get_variable_texte(df_redaction,'p13_0'))
+  p13 <- glue(get_variable_texte(df_redaction,'p13'))
+  p14 <- glue(get_variable_texte(df_redaction,'p14'))
   p15 <- p15
-  p16 <- glue(get_variable_texte(df_redaction,'p16',langue))
-  p17 <- glue(get_variable_texte(df_redaction,'p17',langue))
+  p16 <- glue(get_variable_texte(df_redaction,'p16'))
+  p17 <- glue(get_variable_texte(df_redaction,'p17'))
   p19 <- p19
-  p20_0 <- glue(get_variable_texte(df_redaction,'p20_0',langue))
-  p20 <- glue(get_variable_texte(df_redaction,'p20',langue))
+  p20_0 <- glue(get_variable_texte(df_redaction,'p20_0'))
+  p20 <- glue(get_variable_texte(df_redaction,'p20'))
   
   if (p05=='NA') {
     p05 <- ''

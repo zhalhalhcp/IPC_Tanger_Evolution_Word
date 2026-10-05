@@ -209,8 +209,12 @@ get_p04_vars <- function(df_evol_1mois,langue){
   return(c(liste_pdt_alim_1mois_plus,liste_pdt_alim_1mois_neutre,liste_pdt_alim_1mois_moins))
 }
 
-get_p06_vars <- function(df_evol_1mois,langue){
+get_p06_vars <- function(df_evol_1mois,langue ){
   df_evol_div_non_alim_1mois <- get_df_div_non_alim(df_evol_1mois)
+  nb_positive <- sum(df_evol_div_non_alim_1mois$evolution > 0)
+  nb_negative <- sum(df_evol_div_non_alim_1mois$evolution < 0)
+  nb_neutre   <- sum(df_evol_div_non_alim_1mois$evolution == 0)
+  
   df_evol_div_non_alim_1mois <- rassembler_meme_evolution(df_evol_div_non_alim_1mois)
   df_liste_div_non_alim_plus <- df_evol_div_non_alim_1mois %>% 
     filter(evolution > 0) %>% 
@@ -224,7 +228,7 @@ get_p06_vars <- function(df_evol_1mois,langue){
   liste_div_non_alim_plus <- get_phrase(df_liste_div_non_alim_plus,langue)
   liste_div_non_alim_neutre <- get_phrase(df_liste_div_non_alim_neutre,langue)
   liste_div_non_alim_moins <- get_phrase(df_liste_div_non_alim_moins,langue)
-  return(c(liste_div_non_alim_plus,liste_div_non_alim_neutre,liste_div_non_alim_moins))
+  return(c(liste_div_non_alim_plus,liste_div_non_alim_neutre,liste_div_non_alim_moins,nb_positive,nb_neutre,nb_negative))
 }
 
 get_p07_vars <- function(df_evol_12mois,langue){
@@ -265,12 +269,13 @@ get_p10_vars <- function(df_evol_12mois,langue){
   return(c(liste_min_div_non_alim_12mois_moins,liste_max_div_non_alim_12mois_plus))
 }
 
-get_variable_texte <- function(df_redaction,variable_code,langue){
-  #variable_code='p04'
+get_variable_texte <- function(df_redaction,variable_code){
+  #variable_code='p06'
   variable_texte <- df_redaction %>% 
     filter(code==variable_code) %>% 
     select(3) %>% 
-    pull()
+    pull()%>% 
+    paste(collapse = " ")
   return (variable_texte)
 }
 get_evol_annuel_gra <- function(code_ville,ipc_histo,var_analyse){
