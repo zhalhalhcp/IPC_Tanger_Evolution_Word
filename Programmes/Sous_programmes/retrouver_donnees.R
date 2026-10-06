@@ -10,9 +10,9 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
   library(tidyverse)
   
   #cat(">>> p_mois_courant reçu dans le script:", p_mois_courant, "\n")
-    p_mois_courant = 'p_2026_08'
-    langue='fr'
-    code_ville='10'
+    # p_mois_courant = 'p_2026_08'
+    # langue='fr'
+    # code_ville='10'
 
   #Retrouver les variables à utiliser dans le GLUE final ou bien dans les fonctions
   ville <- get_lib_ville(code_ville,langue)
@@ -138,39 +138,92 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
   len_non_alim_moins <- p06_vars[6]
   
   liste_p06_vars <- list()
-  if (len_non_alim_plus>1){
-    liste_p06_vars <- append(liste_p06_vars,'p06_plus')
-  }
+  if (evol_non_alim_1mois>0) {
+    if (len_non_alim_plus>1){
+      liste_p06_vars <- append(liste_p06_vars,'p06_plus')
+    }
+    
+    if(len_non_alim_plus==1){
+      liste_p06_vars <- append(liste_p06_vars,'p06_plus_1')
+    }
   
-  if(len_non_alim_plus==1){
-    liste_p06_vars <- append(liste_p06_vars,'p06_plus_1')
+    if ((len_non_alim_moins>0) || (len_non_alim_neutre>0)) {
+      liste_p06_vars <- append(liste_p06_vars,'p06_plus_moins_prep')
+    }
+    
+    if(len_non_alim_moins > 1){
+      liste_p06_vars <- append(liste_p06_vars,'p06_plus_moins')
+      if (len_non_alim_neutre == 0){
+        liste_p06_vars <- append(liste_p06_vars,'p06_plus_fin')
+      }
+    }
+    
+    if(len_non_alim_moins == 1){
+      liste_p06_vars <- append(liste_p06_vars,'p06_plus_moins_1')
+      if (len_non_alim_neutre == 0){
+        liste_p06_vars <- append(liste_p06_vars,'p06_plus_fin_1')
+      }
+    }
+    
+    if ((len_non_alim_moins>0) && (len_non_alim_neutre>0)) {
+      liste_p06_vars <- append(liste_p06_vars,'p06_plus_neutre_prep')
+    }
+    
+    if(len_non_alim_neutre > 1){
+      liste_p06_vars <- append(liste_p06_vars,'p06_plus_neutre')
+      liste_p06_vars <- append(liste_p06_vars,'p06_plus_fin')
+    }
+    
+    if(len_non_alim_neutre == 1){
+      liste_p06_vars <- append(liste_p06_vars,'p06_plus_neutre_1')
+      liste_p06_vars <- append(liste_p06_vars,'p06_plus_fin_1')
+    }
+    
   }
-
-  if ((len_non_alim_moins>0) || (len_non_alim_neutre>0)) {
-    liste_p06_vars <- append(liste_p06_vars,'p06_plus_moins_prep')
+  else if (evol_non_alim_1mois<0) {
+    if (len_non_alim_moins>1){
+      liste_p06_vars <- append(liste_p06_vars,'p06_moins')
+    }
+    
+    if(len_non_alim_moins==1){
+      liste_p06_vars <- append(liste_p06_vars,'p06_moins_1')
+    }
+    
+    if ((len_non_alim_plus>0) || (len_non_alim_neutre>0)) {
+      liste_p06_vars <- append(liste_p06_vars,'p06_moins_plus_prep')
+    }
+    
+    if(len_non_alim_plus > 1){
+      liste_p06_vars <- append(liste_p06_vars,'p06_moins_plus')
+      if (len_non_alim_neutre==0){
+        liste_p06_vars <- append(liste_p06_vars,'p06_plus_fin')
+      }
+    }
+    
+    if(len_non_alim_plus == 1){
+      liste_p06_vars <- append(liste_p06_vars,'p06_moins_plus_1')
+      if (len_non_alim_neutre==0){
+        liste_p06_vars <- append(liste_p06_vars,'p06_plus_fin_1')
+      }
+    }
+    
+    if ((len_non_alim_plus>0) && (len_non_alim_neutre>0)) {
+      liste_p06_vars <- append(liste_p06_vars,'p06_moins_neutre_prep')
+    }
+    
+    if(len_non_alim_neutre > 1){
+      liste_p06_vars <- append(liste_p06_vars,'p06_moins_neutre')
+      liste_p06_vars <- append(liste_p06_vars,'p06_plus_fin')
+    }
+    
+    if(len_non_alim_neutre == 1){
+      liste_p06_vars <- append(liste_p06_vars,'p06_moins_neutre_1')
+      liste_p06_vars <- append(liste_p06_vars,'p06_plus_fin_1')
+    }
   }
-  
-  if(len_non_alim_moins > 1){
-    liste_p06_vars <- append(liste_p06_vars,'p06_plus_moins')
+  else{
+    print("EEEEE")
   }
-  
-  if(len_non_alim_moins == 1){
-    liste_p06_vars <- append(liste_p06_vars,'p06_plus_moins_1')
-  }
-  
-  if ((len_non_alim_moins>0) && (len_non_alim_neutre>0)) {
-    liste_p06_vars <- append(liste_p06_vars,'p06_plus_neutre_prep')
-  }
-  
-  if(len_non_alim_neutre > 1){
-    liste_p06_vars <- append(liste_p06_vars,'p06_plus_neutre')
-  }
-  
-  if(len_non_alim_neutre == 1){
-    liste_p06_vars <- append(liste_p06_vars,'p06_plus_neutre_1')
-  }
-  
-  
 
   
   liste_p06_vars
