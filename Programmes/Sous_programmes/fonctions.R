@@ -233,6 +233,11 @@ get_p06_vars <- function(df_evol_1mois,langue ){
 
 get_p07_vars <- function(df_evol_12mois,langue){
   df_evol_pdt_alim_12mois <- get_df_pdt_alim(df_evol_12mois)
+  
+  nb_positive <- sum(df_evol_pdt_alim_12mois$evolution > 0)
+  nb_negative <- sum(df_evol_pdt_alim_12mois$evolution < 0)
+  nb_neutre   <- sum(df_evol_pdt_alim_12mois$evolution == 0)
+  
   df_evol_pdt_alim_12mois <- rassembler_meme_evolution(df_evol_pdt_alim_12mois)
   df_liste_pdt_alim_12mois_plus <- df_evol_pdt_alim_12mois %>% 
     filter(evolution > 0) %>% 
@@ -246,7 +251,7 @@ get_p07_vars <- function(df_evol_12mois,langue){
   liste_pdt_alim_12mois_plus <- get_phrase(df_liste_pdt_alim_12mois_plus,langue)
   liste_pdt_alim_12mois_neutre <- get_phrase(df_liste_pdt_alim_12mois_neutre,langue)
   liste_pdt_alim_12mois_moins <- get_phrase(df_liste_pdt_alim_12mois_moins,langue)
-  return(c(liste_pdt_alim_12mois_plus,liste_pdt_alim_12mois_neutre,liste_pdt_alim_12mois_moins))
+  return(c(liste_pdt_alim_12mois_plus,liste_pdt_alim_12mois_neutre,liste_pdt_alim_12mois_moins,nb_positive,nb_neutre,nb_negative))
 }
 
 get_p10_vars <- function(df_evol_12mois,langue){

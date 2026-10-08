@@ -154,7 +154,7 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
     if(len_non_alim_moins > 1){
       liste_p06_vars <- append(liste_p06_vars,'p06_plus_moins')
       if (len_non_alim_neutre == 0){
-        liste_p06_vars <- append(liste_p06_vars,'p06_plus_fin')
+        liste_p06_vars <- append(liste_p06_vars,'p06_plus_fin_1')
       }
     }
     
@@ -171,16 +171,24 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
     
     if(len_non_alim_neutre > 1){
       liste_p06_vars <- append(liste_p06_vars,'p06_plus_neutre')
-      liste_p06_vars <- append(liste_p06_vars,'p06_plus_fin')
+      if (len_non_alim_moins == 0){
+      liste_p06_vars <- append(liste_p06_vars,'p06_plus_fin_1')
+      }else{
+        liste_p06_vars <- append(liste_p06_vars,'p06_plus_fin')
+      }
     }
     
     if(len_non_alim_neutre == 1){
       liste_p06_vars <- append(liste_p06_vars,'p06_plus_neutre_1')
-      liste_p06_vars <- append(liste_p06_vars,'p06_plus_fin_1')
+      if (len_non_alim_moins == 0){
+        liste_p06_vars <- append(liste_p06_vars,'p06_plus_fin_1')
+      }else{
+        liste_p06_vars <- append(liste_p06_vars,'p06_plus_fin')
+      }
+      
     }
     
-  }
-  else if (evol_non_alim_1mois<0) {
+  } else if (evol_non_alim_1mois<0){
     if (len_non_alim_moins>1){
       liste_p06_vars <- append(liste_p06_vars,'p06_moins')
     }
@@ -196,14 +204,14 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
     if(len_non_alim_plus > 1){
       liste_p06_vars <- append(liste_p06_vars,'p06_moins_plus')
       if (len_non_alim_neutre==0){
-        liste_p06_vars <- append(liste_p06_vars,'p06_plus_fin')
+        liste_p06_vars <- append(liste_p06_vars,'p06_moins_fin_1')
       }
     }
     
     if(len_non_alim_plus == 1){
       liste_p06_vars <- append(liste_p06_vars,'p06_moins_plus_1')
       if (len_non_alim_neutre==0){
-        liste_p06_vars <- append(liste_p06_vars,'p06_plus_fin_1')
+        liste_p06_vars <- append(liste_p06_vars,'p06_moins_fin_1')
       }
     }
     
@@ -213,16 +221,64 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
     
     if(len_non_alim_neutre > 1){
       liste_p06_vars <- append(liste_p06_vars,'p06_moins_neutre')
-      liste_p06_vars <- append(liste_p06_vars,'p06_plus_fin')
+      if (len_non_alim_plus == 0){
+        liste_p06_vars <- append(liste_p06_vars,'p06_moins_fin_1')
+      }else{
+        liste_p06_vars <- append(liste_p06_vars,'p06_moins_fin')
+      }
     }
     
     if(len_non_alim_neutre == 1){
       liste_p06_vars <- append(liste_p06_vars,'p06_moins_neutre_1')
-      liste_p06_vars <- append(liste_p06_vars,'p06_plus_fin_1')
+      if (len_non_alim_plus == 0){
+        liste_p06_vars <- append(liste_p06_vars,'p06_moins_fin_1')
+      }else{
+        liste_p06_vars <- append(liste_p06_vars,'p06_moins_fin')
+      }
     }
-  }
-  else{
-    print("EEEEE")
+  } else{ # Neutre evol_non_alim_1mois
+    if (len_non_alim_neutre>1){
+      liste_p06_vars <- append(liste_p06_vars,'p06_neutre')
+    }
+    if (len_non_alim_neutre == 1){
+      liste_p06_vars <- append(liste_p06_vars,'p06_neutre_1')
+    }
+    if ((len_non_alim_plus>0) || (len_non_alim_moins>0)) {
+      liste_p06_vars <- append(liste_p06_vars,'p06_neutre_plus_prep')
+    }
+    
+    if(len_non_alim_plus > 1){
+      liste_p06_vars <- append(liste_p06_vars,'p06_neutre_plus')
+      if (len_non_alim_moins == 0){
+        liste_p06_vars <- append(liste_p06_vars,'p06_neutre_fin_1')
+      }
+    }
+    if(len_non_alim_plus == 1){
+      liste_p06_vars <- append(liste_p06_vars,'p06_neutre_plus_1')
+      if (len_non_alim_moins == 0){
+        liste_p06_vars <- append(liste_p06_vars,'p06_neutre_fin_1')
+      }
+    }
+    if ((len_non_alim_plus>0) && (len_non_alim_moins>0)) {
+      liste_p06_vars <- append(liste_p06_vars,'p06_neutre_moins_prep')
+    }
+    if(len_non_alim_moins > 1){
+      liste_p06_vars <- append(liste_p06_vars,'p06_neutre_moins')
+      if (len_non_alim_plus == 0){
+        liste_p06_vars <- append(liste_p06_vars,'p06_neutre_fin_1')
+      }else{
+        liste_p06_vars <- append(liste_p06_vars,'p06_neutre_fin')
+      }
+    }
+    
+    if(len_non_alim_moins == 1){
+      liste_p06_vars <- append(liste_p06_vars,'p06_neutre_moins_1')
+      if (len_non_alim_plus == 0){
+        liste_p06_vars <- append(liste_p06_vars,'p06_neutre_fin_1')
+      }else{
+        liste_p06_vars <- append(liste_p06_vars,'p06_neutre_fin')
+      }
+    }
   }
 
   
@@ -232,11 +288,12 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
   
   evol_alim_12mois <- ipc_histo_tableau %>% filter(code=='001ALIM') %>% pull(evol_12mois)
   
-  p07_variable <- case_when(
-    evol_alim_12mois > 0  ~ "p07_plus",
-    evol_alim_12mois < 0  ~ "p07_moins",
-    TRUE ~ "p07_neutre"
-  )
+  # p07_variable <- case_when(
+  #   evol_alim_12mois > 0  ~ "p07_plus",
+  #   evol_alim_12mois < 0  ~ "p07_moins",
+  #   TRUE ~ "p07_neutre"
+  # )
+  
   annee_m12 <- format(date_analyse_m12, "%Y")
   df_evol_12mois <- ipc_histo_tableau %>% 
     select(ville,code,libelle_diff,evol_12mois)
@@ -244,6 +301,83 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
   liste_pdt_alim_12mois_plus <- p07_vars[1]
   liste_pdt_alim_12mois_neutre <- p07_vars[2]
   liste_pdt_alim_12mois_moins <- p07_vars[3]
+  len_pdt_alim_12mois_plus <- p07_vars[4]
+  len_pdt_alim_12mois_neutre <- p07_vars[5]
+  len_pdt_alim_12mois_moins <- p07_vars[6]
+  
+  #evol_alim_12mois=0
+  
+  liste_p07_vars <- list()
+  if (evol_alim_12mois>0){
+    liste_p07_vars <- append(liste_p07_vars,'p07_plus')
+    if ((len_pdt_alim_12mois_moins>0) || (len_pdt_alim_12mois_neutre>0)) {
+      liste_p07_vars <- append(liste_p07_vars,'p07_plus_moins_prep')
+    }
+    if (len_pdt_alim_12mois_moins>0){
+      liste_p07_vars <- append(liste_p07_vars,'p07_plus_moins')
+      if (len_pdt_alim_12mois_neutre == 0){
+        liste_p07_vars <- append(liste_p07_vars,'p07_plus_fin_1')
+      }
+    }
+    if ((len_pdt_alim_12mois_moins>0) && (len_pdt_alim_12mois_neutre>0)) {
+      liste_p07_vars <- append(liste_p07_vars,'p07_plus_neutre_prep')
+    }
+    if (len_pdt_alim_12mois_neutre>0){
+      liste_p07_vars <- append(liste_p07_vars,'p07_plus_neutre')
+      if (len_pdt_alim_12mois_moins == 0){
+        liste_p07_vars <- append(liste_p07_vars,'p07_plus_fin_1')
+      }else{
+        liste_p07_vars <- append(liste_p07_vars,'p07_moins_fin')
+      }
+    }
+  } else if(evol_alim_12mois<0){
+    liste_p07_vars <- append(liste_p07_vars,'p07_moins')
+    if ((len_pdt_alim_12mois_plus>0) || (len_pdt_alim_12mois_neutre>0)) {
+      liste_p07_vars <- append(liste_p07_vars,'p07_moins_plus_prep')
+    }
+    if (len_pdt_alim_12mois_plus>0){
+      liste_p07_vars <- append(liste_p07_vars,'p07_moins_plus')
+      if (len_pdt_alim_12mois_neutre == 0){
+        liste_p07_vars <- append(liste_p07_vars,'p07_moins_fin_1')
+      }
+    }
+    if ((len_pdt_alim_12mois_plus>0) && (len_pdt_alim_12mois_neutre>0)) {
+      liste_p07_vars <- append(liste_p07_vars,'p07_moins_neutre_prep')
+    }
+    if (len_pdt_alim_12mois_neutre>0){
+      liste_p07_vars <- append(liste_p07_vars,'p07_moins_neutre')
+      if (len_pdt_alim_12mois_plus == 0){
+        liste_p07_vars <- append(liste_p07_vars,'p07_moins_fin_1')
+      }else{
+        liste_p07_vars <- append(liste_p07_vars,'p07_moins_fin')
+      }
+    }
+  } else{
+      liste_p07_vars <- append(liste_p07_vars,'p07_neutre')
+      if ((len_pdt_alim_12mois_plus>0) || (len_pdt_alim_12mois_moins>0)) {
+        liste_p07_vars <- append(liste_p07_vars,'p07_neutre_plus_prep')
+      }
+      if (len_pdt_alim_12mois_plus>0){
+        liste_p07_vars <- append(liste_p07_vars,'p07_neutre_plus')
+        if (len_pdt_alim_12mois_moins == 0){
+          liste_p07_vars <- append(liste_p07_vars,'p07_neutre_fin_1')
+        }
+      }
+      if ((len_pdt_alim_12mois_plus>0) && (len_pdt_alim_12mois_moins>0)) {
+        liste_p07_vars <- append(liste_p07_vars,'p07_neutre_moins_prep')
+      }
+      if (len_pdt_alim_12mois_moins>0){
+        liste_p07_vars <- append(liste_p07_vars,'p07_neutre_moins')
+        if (len_pdt_alim_12mois_plus == 0){
+          liste_p07_vars <- append(liste_p07_vars,'p07_neutre_fin_1')
+        }else{
+          liste_p07_vars <- append(liste_p07_vars,'p07_neutre_fin')
+        }
+      }
+   
+    #liste_p07_vars <- append(liste_p07_vars,'p07_neutre')
+  }
+  liste_p07_vars
   
   #############################p08#######################
   evol_non_alim_12mois <- ipc_histo_tableau %>% filter(code=='001NONALIM') %>% pull(evol_12mois)
@@ -358,7 +492,7 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
     p04_variable,
     p05_variable,
     #p06_variable,
-    p07_variable,
+    #p07_variable,
     p08_variable,
     p09_variable,
     p10_variable,
@@ -372,9 +506,11 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
     p20_variable
     )
     )
+  #df_variables <- data.frame()
   df_variables <- rbind(
     df_variables,
-    data.frame(var_redaction = unlist(liste_p06_vars))
+    data.frame(var_redaction = unlist(liste_p06_vars)),
+    data.frame(var_redaction = unlist(liste_p07_vars))
   )
   #readaction_template <- read.xlsx("Input/redaction_template.xlsx")
   df_redaction <- df_variables %>% 

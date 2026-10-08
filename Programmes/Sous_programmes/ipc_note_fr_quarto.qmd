@@ -153,11 +153,6 @@ resultat$p19
 ::: {custom-style="ipc_legende_tableau"}
 [`r resultat$p20_0`]{.underline} `r resultat$p20`
 :::
-::: {custom-style="ipc_pied_page"}
-Angle Avenue Ibn Tachafine et Avenue Ibn Toumart B.P.104 Tanger  
-****<span style="color:red">Tél</span>:0539940698****Fax:0539940364 
-<span style="color:red">Site Web</span>: www.hcp.ma/region-tanger Email:hcp.dr.tanger@hcp.ma
-:::
 :::
 ```{=openxml}
 <w:p>
