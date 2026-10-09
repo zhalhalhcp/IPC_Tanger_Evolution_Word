@@ -160,7 +160,7 @@ get_phrase2 <- function(df_resultats, langue) {
     mutate(
       fr  = paste0(" de ", fmt(abs(evolution)), "% pour la division ",fr),
       ar  = paste0(ar, "ب", fmt(abs(evolution)), "% \u200F"),# \u200F aide Word pour la direction
-      ang = paste0(ang, " by ", fmt(abs(evolution)), "%")
+      ang = paste0(fmt(abs(evolution)), "% for the division of ",ang )
     )
   
   # 2. Extraction de la colonne correspondant à la langue
