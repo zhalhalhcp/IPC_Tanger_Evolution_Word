@@ -1,5 +1,5 @@
 ---
-title-meta: "Indice des Prix à la Consommation - Juin 2025"
+title-meta: "Indice des Prix à la Consommation"
 subtitle-meta: "Direction Régionale de Tanger - Tétouan - Al Hoceima"
 author-meta: "Haut-Commissariat au Plan, Direction de la Statistique"
 format:

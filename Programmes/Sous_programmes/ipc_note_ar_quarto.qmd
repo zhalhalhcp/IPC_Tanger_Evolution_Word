@@ -1,21 +1,31 @@
 ---
-title-meta: "Indice des Prix à la Consommation - Juin 2025"   # utilisé uniquement comme métadonnée interne
-subtitle-meta: "Direction Régionale de Tanger - Tétouan - Al Hoceima"
-author-meta: "Haut-Commissariat au Plan, Direction de la Statistique"
-lang: ar
+title-meta: "الرقم الاستدلالي للأثمان"
+subtitle-meta: "المديرية الجهوية طنجة - تطوان - الحسيمة"
+author-meta: "المندوبية السامية للتخطيط، مديرية الإحصاء"
 format:
   docx:
     reference-doc: templates/template_note_ar.docx
     toc: false
-    pandoc-args: ["--metadata=title:", "--metadata=subtitle:", "--metadata=author",
-    "--variable=dir;rtl","--variable=lang;ar","--pdf-engine=xelatex"]
+    pandoc-args: 
+      - "--metadata=title:"
+      - "--metadata=subtitle:"
+      - "--metadata=author"
+    prefer-html: false
+lang: ar
+dir: rtl
 params:
-  p_mois_courant: null
+  p_mois_courant: 'p_2025_08'
   langue: "ar"
-  code_ville: "01"
-execute:
-  echo: false
-  eval: true
+  code_ville: "10"
+knitr:
+  opts_chunk:
+    echo: false
+    warning: false
+    message: false
+    dev: "png"
+    dpi: 300
+    fig-width: 3.2
+    fig-height: 1.8
 ---
 
 ```{r}
@@ -35,49 +45,76 @@ source("../Sous_programmes/retrouver_donnees.R", local = TRUE)
 # Appeler la fonction
 resultat <- retrouver_donnees(p_mois_courant,code_ville,langue)
 ```
+```{r}
+#| echo: false
+library(flextable)
+library(officer)
 
-::: {custom-style="ipc_titre_1_center"}
-مذكرة اخبارية للمديرية الجهوية لجهة طنجة تطوان الحسيمة
-:::
-
-::: {custom-style="ipc_titre_0"}
-الرقم الاستدلالي للأثمان عند الاستهلاك أساس : (2017 :100)
-`r resultat$ville`
-:::
+data.frame(
+  col1 = paste0(
+  str_to_upper(str_sub(resultat$ville, 1, 1)),
+  str_sub(resultat$ville, 2)
+  ),
+  col2 = paste0("الرقم الاستدلالي للأثمان - ", resultat$p00)
+) |>
+  flextable() |>
+  delete_part(part = "header") |>
+  set_table_properties(layout = "fixed", width = 1) |>
+  width(j = 2, width = 6.30) |>
+  width(j = 1, width = 1.575) |>
+  border_remove() |>
+  border(j = 2, border.bottom = fp_border(color = "#F8A180", width = 1.5)) |>
+  border(j = 1, border.bottom = fp_border(color = "#F8A180", width = 1.5)) |>
+  bg(j = 1, bg = "#F8A180") |>
+  font(fontname = "Arial", cs.family = "Arial", part = "all") |>
+  bold(bold = TRUE, part = "all") |>
+  color(color = "#8D4354", part = "body") |>
+  align(j = 1, align = "center")
+```
 
 ::: {custom-style="ipc_para_0"}
 `r resultat$p01` `r resultat$p02`
 :::
+```{=openxml}
+<w:p><w:pPr><w:sectPr>
+<w:type w:val="continuous"/>
+  <w:pgSz w:w="11906" w:h="16838"/>
+  <w:pgMar w:top="284" w:bottom="284" w:left="283" w:right="283"
+           w:header="708" w:footer="708" w:gutter="0"/>
+  <w:cols w:num="1"/>
+</w:sectPr></w:pPr></w:p>
+```
+
+
 
 ::: {custom-style="ipc_corps"}
-`r resultat$p03` `r resultat$p04`
+**Sur un mois,** `r resultat$p03` `r resultat$p04`
 :::
 ::: {custom-style="ipc_corps"}
 `r resultat$p05` `r resultat$p06`
 :::
 
 ::: {custom-style="ipc_corps"}
-**على المستوى السنوي،**`r resultat$p07`
+**Sur un an,** `r resultat$p07`
 :::
 ::: {custom-style="ipc_corps"}
-`r resultat$p08` `r resultat$p09` `r resultat$p10`
+`r resultat$p08` `r resultat$p09` `r resultat$p10` 
 :::
+
+
+
 ::: {custom-style="ipc_titre_0"}
 `r resultat$p11_num` `r resultat$p11`
 :::
 ```{r}
 #| echo: false
-#| message: false
-#| warning: false
-#| fig-width: 6
-#| fig-height: 4
-#| fig-cap: ""
+#| out-width: "9.30cm"
+#| out-height: "5.73cm"
 
-# On appelle simplement l'objet que tu as déjà créé
-resultat$p12
+knitr::include_graphics(resultat$p12)
 ```
-::: {custom-style="ipc_corps"}
-`r resultat$p13`
+::: {custom-style="ipc_legende"}
+[`r resultat$p13_0`]{.underline} `r resultat$p13`
 :::
 
 ::: {custom-style="ipc_titre_0"}
@@ -85,25 +122,52 @@ resultat$p12
 :::
 ```{r}
 #| echo: false
-#| message: false
-#| warning: false
-#| fig-width: 6
-#| fig-height: 4
-#| fig-cap: ""
+#| out-width: "9.30cm"
+#| out-height: "7.01cm"
 
-# On appelle simplement l'objet que tu as déjà créé
-resultat$p15
+knitr::include_graphics(resultat$p15)
 ```
-::: {custom-style="ipc_corps"}
-`r resultat$p16`
+::: {custom-style="ipc_legende"}
+[`r resultat$p13_0`]{.underline} `r resultat$p16`
 :::
+
+```{=openxml}
+<w:p>
+  <w:pPr>
+    <w:sectPr>
+      <w:type w:val="continuous"/>
+      <w:pgSz w:w="11906" w:h="16838"/>
+      <w:pgMar w:top="284" w:bottom="284" w:left="283" w:right="283" w:header="708" w:footer="708" w:gutter="0"/>
+      <w:cols w:num="2" w:space="200"/>
+    </w:sectPr>
+  </w:pPr>
+</w:p>
+```
+
 ::: {custom-style="ipc_para_0"}
 `r resultat$p17_num` `r resultat$p17`
 :::
+
+
+
 ```{r}
 
 resultat$p19
 ```
-::: {custom-style="ipc_para_0"}
-`r resultat$p20`
+
+::: {custom-style="ipc_legende_tableau"}
+[`r resultat$p20_0`]{.underline} `r resultat$p20`
 :::
+:::
+```{=openxml}
+<w:p>
+  <w:pPr>
+    <w:sectPr>
+      <w:type w:val="continuous"/>
+      <w:pgSz w:w="11906" w:h="16838"/>
+      <w:pgMar w:top="284" w:bottom="284" w:left="283" w:right="283" w:header="708" w:footer="708" w:gutter="0"/>
+      <w:cols w:num="1"/>
+    </w:sectPr>
+  </w:pPr>
+</w:p>
+```
