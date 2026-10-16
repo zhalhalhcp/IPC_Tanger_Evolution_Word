@@ -120,9 +120,12 @@ get_phrase <- function(df_resultats, langue) {
   # df_resultat <- df_evol_1mois
   df_temp <- df_resultats %>% 
     mutate(
-      fr  = paste0(fr, " de ", fmt(abs(evolution)), "%"),
-      ar  = paste0(ar, "ب", fmt(abs(evolution)), "% \u200F"),# \u200F aide Word pour la direction
-      ang = paste0(ang, " by ", fmt(abs(evolution)), "%")
+      fr = ifelse(evolution == 0, fr,
+                  paste0(fr, " de ", fmt(abs(evolution)), "%")),
+      ar = ifelse(evolution == 0, ar,
+                  paste0(ar, "ب", fmt(abs(evolution)), "% \u200F")),
+      ang = ifelse(evolution == 0, ang,
+                   paste0(ang, " by ", fmt(abs(evolution)), "%"))
     )
   
   # 2. Extraction de la colonne correspondant à la langue
