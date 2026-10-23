@@ -24,7 +24,7 @@ get_lib_ville <- function(code_ville,langue){
   }
   else{
     if (langue == 'ar'){
-      ville <- paste("لمدينة",lib_ville)
+      ville <- paste("مدينة",lib_ville)
     }
     else{
       ville <- paste("city of",lib_ville)
@@ -123,7 +123,7 @@ get_phrase <- function(df_resultats, langue) {
       fr = ifelse(evolution == 0, fr,
                   paste0(fr, " de ", fmt(abs(evolution)), "%")),
       ar = ifelse(evolution == 0, ar,
-                  paste0(ar, "ب", fmt(abs(evolution)), "% \u200F")),
+                  paste0(ar, " ب" , fmt(abs(evolution)), "% \u200F")),
       ang = ifelse(evolution == 0, ang,
                    paste0(ang, " by ", fmt(abs(evolution)), "%"))
     )

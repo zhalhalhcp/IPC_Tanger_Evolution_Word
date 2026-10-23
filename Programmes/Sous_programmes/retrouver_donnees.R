@@ -76,6 +76,8 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
     TRUE ~ "p01_neutre"
   )
   
+
+  
   #variables de p02
   evol_12mois <- ipc_histo_tableau %>% filter(code=='000GEN') %>% pull(evol_12mois)
   #texte du p02
@@ -84,7 +86,12 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
     evol_12mois < 0  ~ "p02_moins",
     TRUE ~ "p02_neutre"
   )
-  
+
+  p01_prep_variable <- case_when(
+    evol_1mois * evol_12mois > 0  ~ "p01_prep_plus",
+    evol_1mois * evol_12mois < 0  ~ "p01_prep_moins",
+    TRUE ~ "p01_prep_neutre"
+  ) 
 
 #############################P03#######################
   
@@ -486,7 +493,8 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
   #consituter un dataframe qui contient le code et le texte
   
   df_variables <- data.frame(var_redaction = c(
-    p01_variable, 
+    p01_variable,
+    p01_prep_variable,
     p02_variable,
     p03_variable,
     p04_variable,
@@ -519,6 +527,7 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
   
   p00 <- glue("{lib_mois_courant} {annee_courante}")
   p01 <- glue(get_variable_texte(df_redaction,'p01'))
+  p01_prep <- glue(get_variable_texte(df_redaction,'p01_prep'))
   p02 <- glue(get_variable_texte(df_redaction,'p02'))
   p03 <- glue(get_variable_texte(df_redaction,'p03'))
   p04 <- glue(get_variable_texte(df_redaction,'p04'))
@@ -549,6 +558,7 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
     ville = ville,
     p00 = p00,
     p01 = p01,
+    p01_prep = p01_prep,
     p02 = p02,
     p03 = p03,
     p04 = p04,

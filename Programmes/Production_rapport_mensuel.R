@@ -31,7 +31,7 @@ lis_var2 <- lis_var[grepl("^V20", lis_var) & !grepl("^V.*99$", lis_var)]
 lis_var2 <- sub("^V", "", lis_var2) 
 last_date <- sort(lis_var2, decreasing = TRUE) [1]
 
-### Création de la fonction produisant le rapport mensuel d'une ville ###
+### Création de la fonction proisant le rapport mensuel d'une ville ###
 #### ---------------------------------------------------------------- ### 
 f_rapport_mensuel <- function(ville) {
   print (glue("Traitement de la ville ",ville))
