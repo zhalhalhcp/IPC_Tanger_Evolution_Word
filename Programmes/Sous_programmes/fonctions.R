@@ -3,7 +3,16 @@ library(glue)
 library(stringr)
 
 fmt <- function(x) {
-  gsub("\\.", ",", sprintf("%.1f", x))
+  # 1. Formatage classique (arrondi + virgule)
+  res <- gsub("\\.", ",", sprintf("%.1f", x))
+  
+  # 2. Ajout du marqueur si la langue est en arabe
+  # Assurez-vous que la variable 'langue' est accessible dans cet environnement
+  if (exists("langue") && langue == "ar") {
+    res <- paste0("\u200E", res)
+  }
+  
+  return(res)
 }
 
 lib_mois <- readRDS(("Input/lib_mois.rds"))
@@ -85,8 +94,9 @@ rassembler_meme_evolution <- function(df_evolution){
     ldf <- list_df[[i]] %>% 
       mutate(
         fr = paste0(prep_fr," «", fr, "»"),
-        ar = paste0("**", ar, "**"),
-        ang = paste0("«", ang, "»")
+        #ar = paste0("**", ar, "**"),
+        ar = paste0("«", ar, "»"),
+        ang = paste0(" «", ang, "»")
       )
     # Traitement du groupe (fusion des lignes)
     groupe_traite <- ldf %>%
@@ -123,7 +133,7 @@ get_phrase <- function(df_resultats, langue) {
       fr = ifelse(evolution == 0, fr,
                   paste0(fr, " de ", fmt(abs(evolution)), "%")),
       ar = ifelse(evolution == 0, ar,
-                  paste0(ar, " ب" , fmt(abs(evolution)), "% \u200F")),
+                  paste0(ar, " ب ", "%", fmt(abs(evolution)))),
       ang = ifelse(evolution == 0, ang,
                    paste0(ang, " by ", fmt(abs(evolution)), "%"))
     )
@@ -162,7 +172,7 @@ get_phrase2 <- function(df_resultats, langue) {
   df_temp <- df_resultats %>% 
     mutate(
       fr  = paste0(" de ", fmt(abs(evolution)), "% pour la division ",fr),
-      ar  = paste0(ar, "ب", fmt(abs(evolution)), "% \u200F"),# \u200F aide Word pour la direction
+      ar  = paste0(ar, " ب ", fmt(abs(evolution)), "% \u200F"),# \u200F aide Word pour la direction
       ang = paste0(fmt(abs(evolution)), "% for the division of ",ang )
     )
   

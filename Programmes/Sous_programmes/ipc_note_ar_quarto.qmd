@@ -98,7 +98,7 @@ data.frame(
 :::
 
 ::: {custom-style="ipc_corps"}
-**على المستوى السنوي,** `r resultat$p07`
+**على المستوى السنوي،** `r resultat$p07`
 :::
 ::: {custom-style="ipc_corps"}
 `r resultat$p08` `r resultat$p09` `r resultat$p10` 
@@ -112,7 +112,7 @@ data.frame(
 ```{r}
 #| echo: false
 #| out-width: "9.30cm"
-#| out-height: "5.73cm"
+#| out-height: "5.3cm"
 
 knitr::include_graphics(resultat$p12)
 ```
@@ -126,7 +126,7 @@ knitr::include_graphics(resultat$p12)
 ```{r}
 #| echo: false
 #| out-width: "9.30cm"
-#| out-height: "7.01cm"
+#| out-height: "5.75cm"
 
 knitr::include_graphics(resultat$p15)
 ```

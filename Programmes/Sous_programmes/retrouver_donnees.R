@@ -436,7 +436,7 @@ retrouver_donnees <- function(p_mois_courant,code_ville,langue) {
   #ipc_evol_mensuel_gra <- get_evol_mensuel_gra(code_ville,ipc_histo,var_analyse)
   #graph_variation_mensuelle <- dessiner_graphique_evol_mensuel(ipc_evol_mensuel_gra,langue)
   p14_num <- case_when(
-    code_ville == '17'  ~ "6-",
+    code_ville == '17'  ~ "5-",
     code_ville == '08'  ~ "4-",
     code_ville == '10'  ~ "2-",
     TRUE ~ ''

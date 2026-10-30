@@ -92,11 +92,12 @@ dessiner_tableau_ar <- function(langue){
     flextable::fontsize(size = 7, part = "all") %>%
     flextable::bold(bold = TRUE, part = "all") %>%
     padding(padding.top = 0, padding.bottom = 0, part = "all") %>%
-    colformat_num(big.mark = " ", decimal.mark = ",") %>%
+    colformat_num(j = 1:9, big.mark = " ", decimal.mark = ",", prefix = "\u200E")%>%
     hline( i = c(1,3,4,14,15), border = fp_border()) %>%
     hline_bottom(part="header",border = fp_border() ) %>%
     hline_top(part="header",border = fp_border() ) %>%
     hline(i=1,part="header",border = fp_border() )
+
   
   ft <- ft %>%
     flextable::align(align = "center", part = "header") %>%
@@ -108,8 +109,8 @@ dessiner_tableau_ar <- function(langue){
     flextable::width(j=1:10,
                      width=c(rep(1.4, 8),1.5,6),
                      unit = "cm")  %>%
-    flextable::align(j = 10, align = "right") %>% 
-    flextable::align(j = 3:7, align = "center") 
+    flextable::align(j = 10, align = "left") %>% 
+    flextable::align(j = 1:9, align = "center") 
   
   ft
 }
@@ -155,6 +156,8 @@ dessiner_tableau_fr_ang <- function(langue){
     hline_bottom(part="header",border = fp_border() ) %>%
     hline_top(part="header",border = fp_border() ) %>%
     hline(i=1,part="header",border = fp_border() )
+
+  
   ft <- ft %>%
     flextable::align(align = "center", part = "header") %>%
     flextable::line_spacing(space = 1, part = "header")
